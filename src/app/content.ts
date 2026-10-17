@@ -9,6 +9,8 @@ export type Project = {
   image: string;
   github: string;
   live?: string;
+  // Extra screens shown under "How it's built", for projects without a live link
+  screens?: { src: string; alt: string }[];
 };
 
 export const projects: Project[] = [
@@ -35,6 +37,10 @@ export const projects: Project[] = [
     stack: ["React Native", "Expo", "Redux Toolkit", "Firebase"],
     year: "2023",
     image: "/projects/eatsxpress-mockup.jpg",
+    screens: [
+      { src: "/projects/eatsxpress/signin.jpg", alt: "EatsXpress phone login, OTP verify, email login and sign up screens" },
+      { src: "/projects/eatsxpress/order.jpg", alt: "EatsXpress home, restaurant menu, cart and account screens" },
+    ],
     github: "https://github.com/yash-189/Eatsxpress",
   },
   {
