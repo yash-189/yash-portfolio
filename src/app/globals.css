@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-sand: var(--sand);
+  --color-moss: var(--moss);
+  --color-band: var(--band);
+  --color-band-fg: var(--band-fg);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+.site-scope {
+  --ink: #0d1220;
+  --ink-soft: #5a6275;
+  --paper: #f4f5f8;
+  --paper-dim: #e7eaf1;
+  --accent: #2347d6;
+  --accent-deep: #1c38ab;
+  --sand: #c9d2e6;
+  --moss: #172554;
+  --band: #0d1220;
+  --band-fg: #f4f5f8;
+
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --snap: cubic-bezier(0.16, 1, 0.3, 1);
+
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+  color-scheme: light;
+  overflow-x: clip;
+}
+
+.site-scope.dark {
+  --ink: #f3f5fa;
+  --ink-soft: #aab3c7;
+  --paper: #080b12;
+  --paper-dim: #121a2c;
+  --accent: #5b7cff;
+  --accent-deep: #8aa2ff;
+  --sand: #8f9bb8;
+  --moss: #2b3f8f;
+  --band: #03050a;
+  --band-fg: #f3f5fa;
+  color-scheme: dark;
+}
+
+.site-scope body {
+  background: var(--paper);
+}
+
+html.site-scope {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+@layer base {
+  .site-scope a,
+  .site-scope button {
+    color: inherit;
+  }
+}
+
+.site-scope :focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.site-scope ::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+.dark .grain {
+  mix-blend-mode: screen;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.link-underline {
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  background-size: 0% 2px;
+  padding-bottom: 3px;
+  transition: background-size 320ms var(--snap), color 200ms ease;
+}
+
+.link-underline:hover,
+.link-underline:focus-visible {
+  background-position: 0 100%;
+  background-size: 100% 2px;
+}
+
+.btn-fill {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: transform 180ms var(--snap);
+}
+
+.btn-fill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--moss);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 450ms var(--snap);
+}
+
+.btn-fill:hover::before,
+.btn-fill:focus-visible::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.btn-fill > span {
+  transition: letter-spacing 450ms var(--snap);
+}
+
+.btn-fill:hover > span,
+.btn-fill:focus-visible > span {
+  letter-spacing: 0.2em;
+}
+
+.btn-fill:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-scope *,
+  .site-scope *::before,
+  .site-scope *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html.site-scope {
+    scroll-behavior: auto;
+  }
+}
