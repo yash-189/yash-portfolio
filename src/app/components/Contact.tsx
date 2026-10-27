@@ -77,9 +77,8 @@ export function Contact() {
             {contact.email}
           </motion.p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
-            <motion.a
-              {...reveal(0.15)}
+          <motion.div {...reveal(0.15)} className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
+            <a
               href={`mailto:${contact.email}`}
               className="group inline-flex items-center gap-4 rounded-full bg-accent px-9 py-4 font-mono text-sm uppercase tracking-[0.2em] text-white transition-transform hover:-translate-y-0.5"
             >
@@ -90,11 +89,10 @@ export function Contact() {
               >
                 →
               </span>
-            </motion.a>
+            </a>
 
             {github && (
-              <motion.a
-                {...reveal(0.2)}
+              <a
                 href={github.href}
                 target="_blank"
                 rel="noreferrer"
@@ -102,9 +100,9 @@ export function Contact() {
               >
                 <GitHubIcon />
                 GitHub
-              </motion.a>
+              </a>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
 
@@ -122,9 +120,12 @@ export function Contact() {
       </div>
 
       <div className="relative mx-auto max-w-6xl px-6 lg:absolute lg:inset-x-0 lg:bottom-[7%]">
-        <p className="py-8 font-mono text-sm uppercase tracking-[0.2em] text-sand lg:py-0">
+        <motion.p
+          {...reveal(0.2)}
+          className="py-8 font-mono text-sm uppercase tracking-[0.2em] text-sand lg:py-0"
+        >
           © {new Date().getFullYear()} Yash Saini
-        </p>
+        </motion.p>
       </div>
     </section>
   );
