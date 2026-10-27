@@ -56,10 +56,12 @@ function Links({ project }: { project: Project }) {
 function ProjectCard({
   project,
   index,
+  featured,
   onOpen,
 }: {
   project: Project;
   index: number;
+  featured: boolean;
   onOpen: () => void;
 }) {
   return (
@@ -68,13 +70,13 @@ function ProjectCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, delay: (index % 2) * 0.08, ease }}
-      className="group flex flex-col overflow-hidden rounded-[20px] border-2 border-ink/10 bg-paper transition-[border-color,box-shadow,translate] duration-300 hover:-translate-y-1 hover:border-accent/60 hover:shadow-[0_24px_48px_-28px_rgb(13_18_32/0.35)]"
+      className={`group flex flex-col overflow-hidden rounded-[20px] ${featured ? "md:col-span-2 lg:flex-row" : ""} border-2 border-ink/10 bg-paper transition-[border-color,box-shadow,translate] duration-300 hover:-translate-y-1 hover:border-accent/60 hover:shadow-[0_24px_48px_-28px_rgb(13_18_32/0.35)]`}
     >
       <button
         type="button"
         onClick={onOpen}
         aria-label={`How ${project.name} is built`}
-        className="relative block aspect-16/10 cursor-zoom-in overflow-hidden bg-paper-dim"
+        className={`relative block aspect-16/10 shrink-0 cursor-zoom-in overflow-hidden bg-paper-dim ${featured ? "lg:w-[58%]" : ""}`}
       >
         <motion.div
           layoutId={`${project.id}-image`}
@@ -95,7 +97,7 @@ function ProjectCard({
         <h3 className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl">
           {project.name}
         </h3>
-        <p className="line-clamp-2 leading-relaxed text-ink-soft">
+        <p className={`leading-relaxed text-ink-soft ${featured ? "" : "line-clamp-2"}`}>
           {project.summary}
         </p>
 
@@ -140,7 +142,6 @@ function ProjectDetails({
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
-  // Escape closes, the page behind doesn't scroll, and focus starts on the close button
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     const previous = document.activeElement as HTMLElement | null;
@@ -243,14 +244,16 @@ function ProjectDetails({
         </motion.div>
 
         {project.screens && (
-          <div className="space-y-4 px-6 pb-6 md:px-10 md:pb-10">
+          <div
+            className={`grid gap-4 px-6 pb-6 md:px-10 md:pb-10 ${project.screens.length > 2 ? "sm:grid-cols-2" : ""}`}
+          >
             {project.screens.map((screen) => (
               <Image
                 key={screen.src}
                 src={screen.src}
                 alt={screen.alt}
-                width={1600}
-                height={813}
+                width={screen.width}
+                height={screen.height}
                 sizes="(min-width: 896px) 816px, 100vw"
                 className="w-full rounded-2xl"
               />
@@ -314,6 +317,7 @@ export function Projects() {
             key={project.id}
             project={project}
             index={i}
+            featured={i === 0}
             onOpen={() => setOpenId(project.id)}
           />
         ))}

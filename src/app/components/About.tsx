@@ -25,7 +25,15 @@ export function About() {
             transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
             className="text-lg leading-relaxed text-ink-soft md:text-xl"
           >
-            {paragraph}
+            {paragraph.split("**").map((part, j) =>
+              j % 2 ? (
+                <strong key={j} className="font-semibold text-ink">
+                  {part}
+                </strong>
+              ) : (
+                part
+              ),
+            )}
           </motion.p>
         ))}
       </div>

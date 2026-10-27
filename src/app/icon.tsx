@@ -3,7 +3,6 @@ import { ImageResponse } from "next/og";
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
-// Favicon: "Y" monogram on the accent colour.
 export default function Icon() {
   return new ImageResponse(
     (

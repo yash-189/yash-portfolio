@@ -9,11 +9,33 @@ export type Project = {
   image: string;
   github: string;
   live?: string;
-  // Extra screens shown under "How it's built", for projects without a live link
-  screens?: { src: string; alt: string }[];
+  screens?: { src: string; alt: string; width: number; height: number }[];
 };
 
 export const projects: Project[] = [
+  {
+    id: "yatrik",
+    kind: "Booking site",
+    name: "Yatrik",
+    summary:
+      "A travel booking site for trips across India: tours filtered by region and theme with day-by-day itineraries, cab booking with upfront all-inclusive fares, and a one-page checkout paid through Razorpay.",
+    highlights: [
+      "Server prices every order and verifies the Razorpay payment signature",
+      "Every tour is a JSON file, checked against a Zod schema at build time",
+      "One-time-code sign in kept in a signed cookie session",
+    ],
+    stack: ["Next.js", "TypeScript", "Tailwind CSS", "Radix UI", "Zod", "Razorpay"],
+    year: "2026",
+    image: "/projects/yatrik-mockup.jpg",
+    screens: [
+      { src: "/projects/yatrik/tours.jpg", alt: "Yatrik tours list with region and theme filters", width: 1600, height: 1000 },
+      { src: "/projects/yatrik/tour.jpg", alt: "Yatrik tour page with itinerary", width: 1600, height: 1000 },
+      { src: "/projects/yatrik/checkout.jpg", alt: "Yatrik tour checkout", width: 1600, height: 1000 },
+      { src: "/projects/yatrik/cab-checkout.jpg", alt: "Yatrik cab checkout", width: 1600, height: 1000 },
+    ],
+    github: "https://github.com/yash-189/yatrik",
+    live: "https://yatrik-seven.vercel.app",
+  },
   {
     id: "react-dashboard",
     kind: "Dashboard",
@@ -38,8 +60,8 @@ export const projects: Project[] = [
     year: "2023",
     image: "/projects/eatsxpress-mockup.jpg",
     screens: [
-      { src: "/projects/eatsxpress/signin.jpg", alt: "EatsXpress phone login, OTP verify, email login and sign up screens" },
-      { src: "/projects/eatsxpress/order.jpg", alt: "EatsXpress home, restaurant menu, cart and account screens" },
+      { src: "/projects/eatsxpress/signin.jpg", alt: "EatsXpress phone login, OTP verify, email login and sign up screens", width: 1600, height: 813 },
+      { src: "/projects/eatsxpress/order.jpg", alt: "EatsXpress home, restaurant menu, cart and account screens", width: 1600, height: 813 },
     ],
     github: "https://github.com/yash-189/Eatsxpress",
   },
@@ -89,6 +111,11 @@ export const capabilities: Capability[] = [
     tools: ["React", "Next.js", "TypeScript"],
   },
   {
+    label: "Styling and motion",
+    detail: "Utility-first styling, accessible component primitives and small animations that give feedback.",
+    tools: ["Tailwind CSS", "shadcn/ui", "Motion"],
+  },
+  {
     label: "Server state and data",
     detail: "Caching, pagination, background refetching and keeping the UI in sync with the API.",
     tools: ["React Query", "Redux Toolkit", "Zustand"],
@@ -99,9 +126,9 @@ export const capabilities: Capability[] = [
     tools: ["TanStack Table", "Recharts"],
   },
   {
-    label: "Real-time interfaces",
-    detail: "Live updates pushed into the React Query cache so every screen stays current.",
-    tools: ["Socket.IO", "SSE"],
+    label: "Mobile",
+    detail: "Cross-platform apps with native navigation, maps and auth.",
+    tools: ["React Native", "Expo"],
   },
   {
     label: "Performance",
@@ -109,21 +136,22 @@ export const capabilities: Capability[] = [
     tools: ["React profiler", "Lighthouse"],
   },
   {
-    label: "Mobile",
-    detail: "Cross-platform apps with native navigation, maps and auth.",
-    tools: ["React Native", "Expo"],
+    label: "Real-time interfaces",
+    detail: "Live updates pushed into the React Query cache so every screen stays current.",
+    tools: ["Socket.IO", "SSE"],
   },
 ];
 
 export const bio = {
   name: "Yash Saini",
   role: "Frontend Developer",
-  location: "Meerut, India",
-  status: "Open to frontend roles · Remote or on-site",
+  experience: "3 years experience",
+  location: "Meerut · Delhi NCR",
   tagline: "I build interfaces that look right and work right.",
+  stack: ["React", "Next.js", "Tailwind CSS", "React Native"],
   paragraphs: [
-    "I'm a frontend developer working mostly with React, Next.js and TypeScript. For the last three years I've built dashboards, admin tools and product UIs for fintech and SaaS teams.",
-    "I also design. I can't leave a misaligned icon, uneven spacing or an off-grid button alone, and I usually spot these issues before anyone else does. I work from the basics: spacing scales, type hierarchy, contrast, alignment and consistent components.",
+    "I'm a frontend developer working mostly with React, Next.js and TypeScript. For the last **three years** I've built dashboards, admin tools and product UIs for fintech and SaaS teams.",
+    "I also design. I can't leave a misaligned icon, uneven spacing or an off-grid button alone, and I usually **spot these issues before anyone else does**. I work from the basics: spacing scales, type hierarchy, contrast, alignment and consistent components.",
     "I like modern UI that stays clean and calm, with bold type where it matters and nothing extra. Small details like hover states, loading skeletons and empty states are where an interface feels finished.",
     "On the code side, I organise by feature, keep API logic in one layer and server state in React Query. Reusable components and hooks mean the design stays consistent as the product grows.",
   ],

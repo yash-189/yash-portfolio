@@ -6,7 +6,6 @@ export const alt = site.title;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// The preview card shown when the link is shared on LinkedIn, X, Slack or WhatsApp.
 export default function OpengraphImage() {
   return new ImageResponse(
     (

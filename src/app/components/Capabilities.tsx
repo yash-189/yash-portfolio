@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { capabilities } from "../content";
+import { TechLogo } from "./TechLogo";
 
 export function Capabilities() {
   return (
@@ -22,7 +23,14 @@ export function Capabilities() {
             <div>
               <h3 className="font-display text-xl font-semibold text-ink md:text-2xl">{c.label}</h3>
               <p className="mt-2 leading-relaxed text-ink-soft">{c.detail}</p>
-              <p className="mt-3 font-mono text-[11px] uppercase tracking-wide text-ink-soft">{c.tools.join(" · ")}</p>
+              <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[11px] uppercase tracking-wide text-ink-soft">
+                {c.tools.map((tool) => (
+                  <li key={tool} className="inline-flex items-center gap-1.5">
+                    <TechLogo name={tool} />
+                    {tool}
+                  </li>
+                ))}
+              </ul>
             </div>
           </li>
         ))}

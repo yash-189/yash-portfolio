@@ -26,13 +26,6 @@ function GitHubIcon() {
   );
 }
 
-/*
- * The scene image (robot, glow and floor line) has a flat #060d19 background on its left,
- * so the section uses the same colour and the image is pinned to the right edge with no seam.
- * Its floor line sits at 80% of the image height; the copy lives above it and the © below it.
- */
-// In dark mode the page is a neutral near-black and the scene is slightly bluer, so the top of the
-// section fades from the page colour into the scene colour instead of starting with a hard edge.
 const SCENE_BG =
   "bg-[#060d19] dark:bg-[linear-gradient(to_bottom,var(--paper),#060d19_10rem)]";
 
@@ -44,14 +37,10 @@ export function Contact() {
       id="contact"
       className={`relative overflow-hidden ${SCENE_BG} text-band-fg lg:h-[clamp(36rem,46vw,44rem)]`}
     >
-      {/* Desktop: the scene fills the section height. It's anchored to the same centred column as the
-          rest of the page (not the window edge), and shifted right by the empty space beside the robot
-          (~11% of the image) so the robot's right edge lines up with the content's right edge. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-full max-w-6xl -translate-x-1/2 px-6 lg:block"
       >
-        {/* Masks fade the image out at the top, left and right so it melts into the section */}
         <div className="absolute top-[20%] bottom-0 right-6 aspect-3/2 translate-x-[11%] mask-t-from-82% mask-b-from-88% mask-l-from-60% mask-r-from-90%">
           <Image
             src="/contact-bot-2.jpg"
@@ -63,7 +52,6 @@ export function Contact() {
         </div>
       </div>
 
-      {/* Copy, centred in the area above the floor line */}
       <div className="relative mx-auto flex max-w-6xl items-center px-6 pt-28 lg:h-[80%] lg:pt-0">
         <div className="flex flex-col items-start">
           <motion.span
@@ -120,7 +108,6 @@ export function Contact() {
         </div>
       </div>
 
-      {/* Phones and tablets: the robot sits under the copy instead of behind it */}
       <div
         aria-hidden
         className="relative mt-10 aspect-square w-full lg:hidden"
@@ -134,7 +121,6 @@ export function Contact() {
         />
       </div>
 
-      {/* Footer, below the floor line */}
       <div className="relative mx-auto max-w-6xl px-6 lg:absolute lg:inset-x-0 lg:bottom-[7%]">
         <p className="py-8 font-mono text-sm uppercase tracking-[0.2em] text-sand lg:py-0">
           © {new Date().getFullYear()} Yash Saini

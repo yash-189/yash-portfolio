@@ -33,11 +33,10 @@ export function Hero() {
         transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="mt-10 flex flex-col items-center gap-6"
       >
-        <p className="inline-flex items-center gap-2 rounded-full border-2 border-ink/10 px-4 py-2 font-mono text-xs text-ink-soft">
-          <span aria-hidden className="size-2 rounded-full bg-emerald-500" />
-          {bio.status}
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-soft">
+          {bio.stack.join(" · ")}
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <a
             href="#work"
             className="btn-fill inline-flex items-center rounded-full bg-accent px-7 py-3.5 font-mono text-sm uppercase text-white"
