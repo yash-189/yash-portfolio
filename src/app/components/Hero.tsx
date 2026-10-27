@@ -22,7 +22,7 @@ export function Hero() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-        className="mt-6 max-w-xl text-balance font-display text-2xl font-medium text-ink-soft md:text-3xl"
+        className="mt-8 max-w-xl text-balance font-display text-2xl font-medium text-ink-soft md:text-3xl"
       >
         {bio.tagline}
       </motion.p>

@@ -6,19 +6,18 @@ import {
   useAnimationFrame,
   useMotionValue,
   useSpring,
-  useVelocity,
   useTransform,
+  useVelocity,
 } from "motion/react";
 import { TechLogo } from "./TechLogo";
 
 const WORDS = ["YASH", "SAINI"];
 
 const LOGOS: { name: string; style: CSSProperties }[] = [
-  { name: "React", style: { left: "-14%", top: "14%" } },
-  { name: "Figma", style: { left: "-9%", top: "56%" } },
-  { name: "TypeScript", style: { right: "-13%", top: "20%" } },
-  { name: "Next.js", style: { right: "-8%", top: "60%" } },
-  { name: "Tailwind CSS", style: { left: "46%", bottom: "-6%" } },
+  { name: "React", style: { left: "-22%", top: "10%" } },
+  { name: "Figma", style: { left: "-16%", top: "62%" } },
+  { name: "TypeScript", style: { right: "-20%", top: "24%" } },
+  { name: "Next.js", style: { right: "-15%", top: "68%" } },
 ];
 
 function NudgedLogo({
@@ -77,24 +76,59 @@ function NudgedLogo({
   );
 }
 
+function DragWord({
+  word,
+  accent,
+  container,
+  wordRef,
+  onDragChange,
+}: {
+  word: string;
+  accent: boolean;
+  container: RefObject<HTMLDivElement | null>;
+  wordRef: (el: HTMLDivElement | null) => void;
+  onDragChange: (dragging: boolean) => void;
+}) {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const vx = useVelocity(x);
+  const vy = useVelocity(y);
+  const speed = useTransform([vx, vy], ([a, b]: number[]) => Math.min(Math.hypot(a, b) / 1400, 0.2));
+  const stretch = useSpring(speed, { stiffness: 300, damping: 22 });
+  const scaleX = useTransform(stretch, (s) => 1 + s);
+  const scaleY = useTransform(stretch, (s) => 1 - s * 0.5);
+  const rotate = useSpring(
+    useTransform(vx, (v) => Math.max(-6, Math.min(6, v / 250))),
+    { stiffness: 300, damping: 22 },
+  );
+
+  return (
+    <motion.div
+      ref={wordRef}
+      drag
+      dragConstraints={container}
+      dragElastic={0.45}
+      dragTransition={{ power: 0.35, timeConstant: 200, bounceStiffness: 420, bounceDamping: 14 }}
+      onDragStart={() => onDragChange(true)}
+      onDragEnd={() => onDragChange(false)}
+      style={{ x, y, scaleX, scaleY, rotate }}
+      className="cursor-grab touch-none px-2 active:cursor-grabbing"
+    >
+      <span
+        className={`block font-display text-[16vw] font-semibold leading-[0.82] tracking-tight sm:text-[13vw] md:text-[10vw] ${
+          accent ? "text-accent" : "text-ink"
+        }`}
+      >
+        {word}
+      </span>
+    </motion.div>
+  );
+}
+
 export function ThrowableName() {
   const containerRef = useRef<HTMLDivElement>(null);
   const wordRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [dragging, setDragging] = useState(false);
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const velocityX = useVelocity(x);
-  const velocityY = useVelocity(y);
-
-  const stretch = useTransform([velocityX, velocityY], (values) => {
-    const [vx, vy] = values as number[];
-    return Math.min(Math.hypot(vx, vy) / 900, 0.35);
-  });
-
-  const scaleX = useTransform(stretch, (s) => 1 + s);
-  const scaleY = useTransform(stretch, (s) => 1 - s * 0.6);
-  const angle = useTransform(velocityX, (vx) => vx / 60);
 
   return (
     <div
@@ -102,29 +136,16 @@ export function ThrowableName() {
       className="relative flex select-none flex-col items-center gap-1 py-6"
     >
       {WORDS.map((word, i) => (
-        <motion.div
+        <DragWord
           key={word}
-          ref={(el) => {
+          word={word}
+          accent={i === 1}
+          container={containerRef}
+          wordRef={(el) => {
             wordRefs.current[i] = el;
           }}
-          drag
-          dragConstraints={containerRef}
-          dragElastic={0.18}
-          dragTransition={{ power: 0.35, timeConstant: 200, bounceStiffness: 420, bounceDamping: 14 }}
-          onDragStart={() => setDragging(true)}
-          onDragEnd={() => setDragging(false)}
-
-          style={i === 0 ? { x, y, scaleX, scaleY, rotate: angle } : { scaleX, scaleY }}
-          className="cursor-grab touch-none px-2 active:cursor-grabbing"
-        >
-          <span
-            className={`block font-display text-[16vw] font-semibold leading-[0.82] tracking-tight sm:text-[13vw] md:text-[10vw] ${
-              i === 0 ? "text-ink" : "text-accent"
-            }`}
-          >
-            {word}
-          </span>
-        </motion.div>
+          onDragChange={setDragging}
+        />
       ))}
       {LOGOS.map((logo) => (
         <NudgedLogo key={logo.name} name={logo.name} style={logo.style} words={wordRefs} />
