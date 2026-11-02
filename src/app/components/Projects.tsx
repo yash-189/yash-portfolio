@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { projects, type Project } from "../content";
@@ -155,7 +156,7 @@ function ProjectDetails({
     };
   }, [onClose]);
 
-  return (
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -271,7 +272,8 @@ function ProjectDetails({
           ×
         </button>
       </div>
-    </motion.div>
+    </motion.div>,
+    document.body,
   );
 }
 
@@ -281,7 +283,7 @@ export function Projects() {
   const openProject = projects.find((p) => p.id === openId);
 
   return (
-    <section id="work" className="mx-auto max-w-6xl px-6 py-28">
+    <section id="work" className="mx-auto max-w-6xl px-6 py-14 md:py-28">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

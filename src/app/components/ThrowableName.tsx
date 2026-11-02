@@ -115,7 +115,7 @@ function DragWord({
       className="cursor-grab touch-none px-2 active:cursor-grabbing"
     >
       <span
-        className={`block font-display text-[16vw] font-semibold leading-[0.82] tracking-tight sm:text-[13vw] md:text-[10vw] ${
+        className={`block font-display text-[23vw] font-semibold leading-[0.82] tracking-tight sm:text-[15vw] md:text-[10vw] ${
           accent ? "text-accent" : "text-ink"
         }`}
       >

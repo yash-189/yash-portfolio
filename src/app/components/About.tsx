@@ -5,7 +5,7 @@ import { bio } from "../content";
 
 export function About() {
   return (
-    <section id="about" className="mx-auto max-w-3xl px-6 py-28 text-center">
+    <section id="about" className="mx-auto max-w-3xl px-6 py-14 md:py-28 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

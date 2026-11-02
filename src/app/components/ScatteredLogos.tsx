@@ -17,7 +17,7 @@ const SCATTER = [
 
 export function ScatteredLogos() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden md:block">
       {SCATTER.map((logo, i) => (
         <span
           key={i}

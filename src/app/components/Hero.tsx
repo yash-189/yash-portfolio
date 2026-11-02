@@ -6,7 +6,7 @@ import { ThrowableName } from "./ThrowableName";
 
 export function Hero() {
   return (
-    <section id="top" className="relative flex flex-col items-center px-6 pb-16 pt-32 text-center md:pt-40">
+    <section id="top" className="relative flex flex-col items-center px-6 pb-10 pt-28 text-center md:pb-16 md:pt-40">
       <motion.p
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

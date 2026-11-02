@@ -52,8 +52,8 @@ export function Contact() {
         </div>
       </div>
 
-      <div className="relative mx-auto flex max-w-6xl items-center px-6 pt-28 lg:h-[80%] lg:pt-0">
-        <div className="flex flex-col items-start">
+      <div className="relative mx-auto flex max-w-6xl items-center px-6 pt-14 lg:h-[80%] lg:pt-0">
+        <div className="flex w-full flex-col items-start">
           <motion.span
             {...reveal()}
             className="font-mono text-sm uppercase tracking-[0.25em] text-sand"
@@ -77,10 +77,10 @@ export function Contact() {
             {contact.email}
           </motion.p>
 
-          <motion.div {...reveal(0.15)} className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
+          <motion.div {...reveal(0.15)} className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 max-sm:w-full">
             <a
               href={`mailto:${contact.email}`}
-              className="group inline-flex items-center gap-4 rounded-full bg-accent px-9 py-4 font-mono text-sm uppercase tracking-[0.2em] text-white transition-transform hover:-translate-y-0.5"
+              className="group inline-flex items-center justify-center gap-4 rounded-full max-sm:w-full bg-accent px-9 py-4 font-mono text-sm uppercase tracking-[0.2em] text-white transition-transform hover:-translate-y-0.5"
             >
               Send an email
               <span
@@ -96,7 +96,7 @@ export function Contact() {
                 href={github.href}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-3 font-mono text-sm uppercase tracking-[0.2em] text-sand transition-colors hover:text-band-fg"
+                className="inline-flex items-center justify-center gap-3 font-mono text-sm uppercase tracking-[0.2em] text-sand transition-colors hover:text-band-fg max-sm:w-full max-sm:rounded-full max-sm:border-2 max-sm:border-band-fg/15 max-sm:py-3.5"
               >
                 <GitHubIcon />
                 GitHub
@@ -108,7 +108,7 @@ export function Contact() {
 
       <div
         aria-hidden
-        className="relative mt-10 aspect-square w-full lg:hidden"
+        className="relative -mt-6 aspect-square w-full mask-t-from-55% mask-b-from-75% mask-l-from-55% lg:hidden"
       >
         <Image
           src="/contact-bot-2.jpg"

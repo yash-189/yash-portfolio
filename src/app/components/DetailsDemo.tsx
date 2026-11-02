@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useInView } from "motion/react";
 
 type IssueId = "radius" | "play" | "digits" | "hover" | "overflow";
 
@@ -69,11 +69,11 @@ const TRACKS = [
   { title: "Resonance (Extended Late Night Mix)", artist: "Home", time: "7:46" },
 ];
 
-function Marker({ id, open, onToggle }: { id: IssueId; open: boolean; onToggle: (id: IssueId) => void }) {
+function Marker({ id, open, onToggle }: { id: IssueId; open: boolean; onToggle: (id: IssueId, el: HTMLElement) => void }) {
   return (
     <button
       type="button"
-      onClick={() => onToggle(id)}
+      onClick={(e) => onToggle(id, e.currentTarget)}
       aria-expanded={open}
       aria-label={`Issue ${ISSUES[id].n}: ${ISSUES[id].title}`}
       className="group/marker absolute z-10 grid size-6 cursor-pointer place-items-center"
@@ -107,7 +107,16 @@ export function DetailsDemo() {
       return next;
     });
   const [open, setOpen] = useState<IssueId | null>("radius");
-  const toggle = (id: IssueId) => setOpen((cur) => (cur === id ? null : id));
+  const [sheet, setSheet] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(rootRef, { amount: 0.1 });
+  const toggle = (id: IssueId, el: HTMLElement) => {
+    setOpen((cur) => (cur === id && sheet ? null : id));
+    setSheet(true);
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      window.scrollBy({ top: el.getBoundingClientRect().top - window.innerHeight * 0.2, behavior: "smooth" });
+    }
+  };
   const issue = open ? ISSUES[open] : null;
 
   const [elapsed, setElapsed] = useState(58);
@@ -118,8 +127,8 @@ export function DetailsDemo() {
   const clock = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-3">
+    <div ref={rootRef} className="flex flex-col gap-6">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="grid gap-1">
           <h3 className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl">How I catch the details</h3>
           <p className="text-ink-soft">Things I check on every component before it ships. None of them show up in a linter. Tap a number.</p>
@@ -221,7 +230,19 @@ export function DetailsDemo() {
         </div>
       </div>
 
-      <div className="md:pt-4">
+      <div
+        className={`fixed inset-x-3 bottom-3 z-40 max-h-[42vh] overflow-y-auto rounded-2xl border-2 border-ink/10 bg-paper p-5 shadow-2xl transition-transform duration-300 md:static md:z-auto md:max-h-none md:translate-y-0 md:overflow-visible md:rounded-none md:border-0 md:bg-transparent md:p-0 md:pt-4 md:shadow-none ${
+          sheet && inView && issue ? "translate-y-0" : "translate-y-[calc(100%+1rem)]"
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => setSheet(false)}
+          aria-label="Close"
+          className="absolute right-3 top-3 grid size-8 cursor-pointer place-items-center rounded-full text-ink-soft hover:text-ink md:hidden"
+        >
+          ✕
+        </button>
         <AnimatePresence mode="wait">
           {issue ? (
             <motion.div
@@ -232,7 +253,7 @@ export function DetailsDemo() {
               transition={{ duration: 0.22 }}
               className="grid gap-6"
             >
-              <h4 className="font-display text-2xl font-bold tracking-tight text-ink">{issue.title}</h4>
+              <h4 className="pr-8 font-display max-md:-order-2 max-md:text-xl text-2xl font-bold tracking-tight text-ink">{issue.title}</h4>
 
               <ol className="grid gap-4">
                 {(
@@ -259,7 +280,7 @@ export function DetailsDemo() {
                 type="button"
                 onClick={() => open && toggleFix(open)}
                 aria-label={isFixed(open!) ? "Show the original code" : "Apply the fix"}
-                className="group/diff mt-4 cursor-pointer overflow-hidden rounded-xl border-2 border-ink/10 bg-paper-dim text-left font-mono text-[12px] leading-relaxed transition-colors hover:border-accent/40"
+                className="group/diff cursor-pointer max-md:-order-1 md:mt-4 overflow-hidden rounded-xl border-2 border-ink/10 bg-paper-dim text-left font-mono text-[12px] leading-relaxed transition-colors hover:border-accent/40"
               >
                 <span
                   className={`flex gap-3 px-3 py-1.5 transition-opacity ${isFixed(open!) ? "opacity-40 line-through decoration-red-500/60" : ""} bg-red-500/10 text-red-600 dark:text-red-400`}

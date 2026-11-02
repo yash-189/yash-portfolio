@@ -6,7 +6,7 @@ import { TechLogo } from "./TechLogo";
 
 export function Capabilities() {
   return (
-    <section id="skills" className="mx-auto max-w-6xl px-6 py-28">
+    <section id="skills" className="mx-auto max-w-6xl px-6 py-14 md:py-28">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

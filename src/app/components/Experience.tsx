@@ -12,11 +12,11 @@ export function Experience() {
     <>
       <div className="grain" aria-hidden />
       <Nav />
-      <main className="relative isolate">
+      <main className="relative isolate overflow-x-clip">
         <ScatteredLogos />
         <Hero />
         <About />
-        <section id="details" className="mx-auto max-w-6xl px-6 pb-28">
+        <section id="details" className="mx-auto max-w-6xl px-6 pb-14 md:pb-28">
           <DetailsDemo />
         </section>
         <Projects />
