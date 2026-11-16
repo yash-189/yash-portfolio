@@ -1,26 +1,26 @@
 import { About } from "./About";
-import { Capabilities } from "./Capabilities";
 import { Contact } from "./Contact";
 import { DetailsDemo } from "./DetailsDemo";
-import { Hero } from "./Hero";
-import { Nav } from "./Nav";
+import { HeroB } from "./HeroB";
+import { Dock } from "./Dock";
 import { Projects } from "./Projects";
 import { ScatteredLogos } from "./ScatteredLogos";
+import { Skills } from "./Skills";
 
 export function Experience() {
   return (
     <>
       <div className="grain" aria-hidden />
-      <Nav />
-      <main className="relative isolate overflow-x-clip">
+      <Dock />
+      <main data-hs="ab" className="relative isolate overflow-x-clip">
         <ScatteredLogos />
-        <Hero />
+        <HeroB />
         <About />
-        <section id="details" className="mx-auto max-w-6xl px-6 pb-14 md:pb-28">
+        <section id="details" className="mx-auto w-[calc(100%-3rem)] max-w-276 border-t border-ink/10 py-16 md:py-24">
           <DetailsDemo />
         </section>
         <Projects />
-        <Capabilities />
+        <Skills />
         <Contact />
       </main>
     </>
