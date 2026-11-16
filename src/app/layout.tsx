@@ -1,10 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Hanken_Grotesk, Space_Mono } from "next/font/google";
+import { Geist, Hanken_Grotesk, Space_Mono } from "next/font/google";
 import { site, siteUrl } from "./site";
 import "./globals.css";
 
+const sans = Geist({
+  variable: "--font-geist",
+  subsets: ["latin"],
+});
+
 const display = Hanken_Grotesk({
-  variable: "--font-display",
+  variable: "--font-hanken",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
 });
@@ -42,7 +47,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f5f8" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#080b12" },
   ],
 };
@@ -51,7 +56,7 @@ const themeScript = `(function(){try{var t=localStorage.getItem("theme");if(t===
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`site-scope ${display.variable} ${mono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`site-scope ${sans.variable} ${display.variable} ${mono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

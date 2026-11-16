@@ -10,8 +10,8 @@ const subscribe = (onChange: () => void) => {
 
 const isDark = () => document.documentElement.classList.contains("dark");
 
-export function ThemeToggle() {
-  const dark = useSyncExternalStore(subscribe, isDark, () => null);
+export function useTheme() {
+  const dark = useSyncExternalStore(subscribe, isDark, () => false);
 
   const toggle = () => {
     const next = !isDark();
@@ -21,15 +21,5 @@ export function ThemeToggle() {
     } catch {}
   };
 
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-pressed={dark ?? undefined}
-      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
-      className="link-underline font-mono text-xs uppercase tracking-[0.1em] text-ink-soft hover:text-ink sm:tracking-[0.15em]"
-    >
-      {dark === null ? "Theme" : dark ? "Light" : "Dark"}
-    </button>
-  );
+  return { dark, toggle };
 }

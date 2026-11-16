@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView } from "motion/react";
+import { useAmbient } from "./useAmbient";
+import { SectionHeading } from "./SectionHeading";
 
-type IssueId = "radius" | "play" | "digits" | "hover" | "overflow";
+type IssueId = "radius" | "play" | "digits" | "hover" | "overflow" | "states";
+type Status = "ready" | "loading" | "empty" | "error";
 
 type Issue = {
   n: number;
@@ -41,7 +44,7 @@ const ISSUES: Record<IssueId, Issue> = {
     why: "Digits in most fonts have different widths, so 1:11 is narrower than 1:08 and the bar resizes as the time changes.",
     fix: "Anything that counts, like timers, prices or table columns, gets tabular-nums from me by default.",
     diff: { remove: '<time className="text-xs" />', add: '<time className="text-xs tabular-nums" />' },
-    tryIt: { before: "Watch the progress bar for a few seconds.", after: "Watch it again. The bar stays still." },
+    tryIt: { before: "Press play and watch the progress bar.", after: "Watch it again. The bar stays still." },
   },
   hover: {
     n: 4,
@@ -61,12 +64,23 @@ const ISSUES: Record<IssueId, Issue> = {
     diff: { remove: '<span className="flex-1 whitespace-nowrap" />', add: '<span className="min-w-0 flex-1 truncate" />' },
     tryIt: { before: "Look at the third track.", after: "The long title now ends with … and the time stays inside." },
   },
+  states: {
+    n: 6,
+    title: "Every state, not just the happy one",
+    spot: "Switch the list to loading, empty or error. It goes blank, and the user can't tell what's happening.",
+    why: "Designs usually show the list full of data. Real data arrives late, comes back empty or fails.",
+    fix: "I wrap every list in one shared component that shows a loading skeleton, an empty message or a retry button, so no screen is ever left blank.",
+    diff: { remove: "<TrackList />", add: "<WithStates loading={<Skeleton />} empty={<NoTracks />} error={<Retry />}><TrackList /></WithStates>" },
+    tryIt: { before: "Switch between the states below.", after: "Switch again. Each state now tells you what's going on." },
+  },
 };
 
+const ORDER = Object.keys(ISSUES) as IssueId[];
+
 const TRACKS = [
-  { title: "Midnight City", artist: "M83", time: "4:03" },
-  { title: "Nightcall", artist: "Kavinsky", time: "4:18" },
-  { title: "Resonance (Extended Late Night Mix)", artist: "Home", time: "7:46" },
+  { title: "Night Drive", artist: "Low Tide", time: "4:03" },
+  { title: "Afterglow", artist: "Paper Moons", time: "4:18" },
+  { title: "Slow Signals (Extended Late Night Mix)", artist: "Harbour", time: "7:46" },
 ];
 
 function Marker({ id, open, onToggle }: { id: IssueId; open: boolean; onToggle: (id: IssueId, el: HTMLElement) => void }) {
@@ -78,8 +92,7 @@ function Marker({ id, open, onToggle }: { id: IssueId; open: boolean; onToggle: 
       aria-label={`Issue ${ISSUES[id].n}: ${ISSUES[id].title}`}
       className="group/marker absolute z-10 grid size-6 cursor-pointer place-items-center"
     >
-      <span className="absolute inset-0 animate-ping rounded-full bg-accent/40 group-aria-expanded/marker:hidden" />
-      <span className="relative grid size-6 place-items-center rounded-full bg-accent font-mono text-[11px] font-bold text-white shadow-md ring-2 ring-paper transition-transform group-hover/marker:scale-110">
+            <span className="relative grid size-6 place-items-center rounded-full bg-paper text-[11px] font-semibold text-ink shadow-md ring-1 ring-ink/15 transition-[transform,background-color,color] group-hover/marker:scale-110 group-aria-expanded/marker:bg-accent group-aria-expanded/marker:text-white group-aria-expanded/marker:ring-accent">
         {ISSUES[id].n}
       </span>
     </button>
@@ -107,33 +120,42 @@ export function DetailsDemo() {
       return next;
     });
   const [open, setOpen] = useState<IssueId | null>("radius");
-  const [sheet, setSheet] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(rootRef, { amount: 0.1 });
   const toggle = (id: IssueId, el: HTMLElement) => {
-    setOpen((cur) => (cur === id && sheet ? null : id));
-    setSheet(true);
-    if (window.matchMedia("(max-width: 767px)").matches) {
-      window.scrollBy({ top: el.getBoundingClientRect().top - window.innerHeight * 0.2, behavior: "smooth" });
-    }
+    setOpen(id);
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    el.closest("[data-demo]")?.querySelector(`[data-card="${id}"]`)?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   };
   const issue = open ? ISSUES[open] : null;
+  const [status, setStatus] = useState<Status>("ready");
+  const shown: Status = open === "states" ? status : "ready";
 
   const [elapsed, setElapsed] = useState(58);
+  const music = useAmbient();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(rootRef, { amount: 0.15 });
+  const { playing, stop } = music;
   useEffect(() => {
-    const id = setInterval(() => setElapsed((t) => (t >= 243 ? 58 : t + 1)), 1000);
+    if (!playing) return;
+    const id = setInterval(() => setElapsed((t) => (t >= 243 ? 0 : t + 1)), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [playing]);
+  useEffect(() => {
+    if (!inView && playing) stop();
+  }, [inView, playing, stop]);
   const clock = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
 
   return (
-    <div ref={rootRef} className="flex flex-col gap-6">
-      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="grid gap-1">
-          <h3 className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl">How I catch the details</h3>
-          <p className="text-ink-soft">Things I check on every component before it ships. None of them show up in a linter. Tap a number.</p>
+    <div ref={rootRef} data-demo className="flex flex-col gap-12 md:gap-16">
+      <div>
+        <div>
+          <SectionHeading label="Process" lead="How I catch the" accent="details" circled />
+          <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-pretty text-ink-soft md:text-lg">Six things I check on every component before it ships. None of them show up in a linter.</p>
         </div>
-        <div role="radiogroup" aria-label="Version" className="relative flex rounded-full border-2 border-ink/10 bg-paper-dim p-1">
+      </div>
+
+      <div className="glass-card relative grid items-start gap-8 rounded-3xl p-4 md:grid-cols-2 md:gap-12 md:p-8">
+      <div className="absolute top-5 left-1/2 z-20 -translate-x-1/2 md:top-8 md:right-8 md:left-auto md:translate-x-0">
+        <div role="radiogroup" aria-label="Version" className="glass-dock relative flex rounded-full p-1">
           {(["Before", "After"] as const).map((label) => {
             const active = (label === "After") === allFixed;
             return (
@@ -143,7 +165,7 @@ export function DetailsDemo() {
                 role="radio"
                 aria-checked={active}
                 onClick={() => setAll(label === "After")}
-                className={`relative z-10 cursor-pointer rounded-full px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] transition-colors ${
+                className={`relative z-10 cursor-pointer rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors ${
                   active ? (allFixed ? "text-white" : "text-paper") : "text-ink-soft hover:text-ink"
                 }`}
               >
@@ -160,10 +182,8 @@ export function DetailsDemo() {
           })}
         </div>
       </div>
-
-      <div className="grid items-start gap-8 md:grid-cols-2 md:gap-12">
-      <div className="grid place-items-center rounded-[20px] border-2 border-ink/10 bg-paper-dim px-5 py-10">
-        <div className="relative w-full max-w-[280px]">
+      <div className="grid place-items-center px-2 pt-16 pb-6 md:self-stretch md:border-r md:border-ink/10 md:px-5 md:py-10 md:pr-12">
+        <div className="relative w-full max-w-70">
           <div className="rounded-3xl bg-paper p-3 shadow-[0_24px_50px_-28px_rgb(13_18_32/0.45)]">
             <div className="relative">
               <motion.div
@@ -173,17 +193,30 @@ export function DetailsDemo() {
               >
                 <div className="flex h-full flex-col justify-end p-4 text-white">
                   <p className="text-xs font-medium uppercase tracking-[0.2em] opacity-80">Now playing</p>
-                  <p className="font-display text-2xl font-bold">Midnight City</p>
+                  <p className="font-display text-2xl font-bold">Night Drive</p>
                 </div>
               </motion.div>
               <span className="absolute -left-3 -top-3"><Marker id="radius" open={open === "radius"} onToggle={toggle} /></span>
 
               <div className="absolute -bottom-6 right-4">
-                <span className="grid size-14 place-items-center rounded-full bg-ink text-paper shadow-lg">
-                  <motion.span animate={{ x: isFixed("play") ? 2 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 20 }} className="grid">
-                    <PlayIcon />
-                  </motion.span>
-                </span>
+                <button
+                  type="button"
+                  onClick={music.toggle}
+                  aria-label={music.playing ? "Pause" : "Play"}
+                  aria-pressed={music.playing}
+                  className="grid size-14 cursor-pointer place-items-center rounded-full bg-ink text-paper shadow-lg transition-transform active:scale-95"
+                >
+                  {music.playing ? (
+                    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+                      <rect x="4" y="3" width="3.5" height="12" rx="1" fill="currentColor" />
+                      <rect x="10.5" y="3" width="3.5" height="12" rx="1" fill="currentColor" />
+                    </svg>
+                  ) : (
+                    <motion.span animate={{ x: isFixed("play") ? 2 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 20 }} className="grid">
+                      <PlayIcon />
+                    </motion.span>
+                  )}
+                </button>
                 <AnimatePresence>
                   {open === "play" && (
                     <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} aria-hidden className="pointer-events-none absolute inset-0">
@@ -205,44 +238,65 @@ export function DetailsDemo() {
               <span className="absolute -left-3 -top-3"><Marker id="digits" open={open === "digits"} onToggle={toggle} /></span>
             </div>
 
-            <ul className="relative mt-3 flex flex-col gap-1">
-              {TRACKS.map((t, i) => (
-                <li
-                  key={t.title}
-                  className={`flex cursor-default items-center gap-3 rounded-xl transition-colors ${
-                    isFixed("hover")
-                      ? "border-2 border-transparent px-3 py-2 hover:border-accent/40 hover:bg-paper-dim"
-                      : "px-3.5 py-2.5 hover:border-2 hover:border-accent/40 hover:bg-paper-dim"
-                  }`}
-                >
-                  <span className="w-4 font-mono text-xs tabular-nums text-ink-soft">{i + 1}</span>
-                  <span className={isFixed("overflow") ? "min-w-0 flex-1" : "flex-1 whitespace-nowrap"}>
-                    <span className={`block text-sm font-semibold text-ink ${isFixed("overflow") ? "truncate" : ""}`}>{t.title}</span>
-                    <span className={`block text-xs text-ink-soft ${isFixed("overflow") ? "truncate" : ""}`}>{t.artist}</span>
+            <ul className="relative mt-3 flex min-h-46 flex-col gap-1">
+              {shown === "ready" ? (
+                <>
+
+                      {TRACKS.map((t, i) => (
+                    <li
+                      key={t.title}
+                      className={`flex cursor-default items-center gap-3 rounded-xl transition-colors ${
+                        isFixed("hover")
+                          ? "border-2 border-transparent px-3 py-2 hover:border-accent/40 hover:bg-paper-dim"
+                          : "px-3.5 py-2.5 hover:border-2 hover:border-accent/40 hover:bg-paper-dim"
+                      }`}
+                    >
+                      <span className="w-4 font-mono text-xs tabular-nums text-ink-soft">{i + 1}</span>
+                      <span className={isFixed("overflow") ? "min-w-0 flex-1" : "flex-1 whitespace-nowrap"}>
+                        <span className={`block text-sm font-semibold text-ink ${isFixed("overflow") ? "truncate" : ""}`}>{t.title}</span>
+                        <span className={`block text-xs text-ink-soft ${isFixed("overflow") ? "truncate" : ""}`}>{t.artist}</span>
+                      </span>
+                      <span className="font-mono text-xs tabular-nums text-ink-soft">{t.time}</span>
+                    </li>
+                  ))}
+                </>
+              ) : !isFixed("states") ? null : shown === "loading" ? (
+                [0, 1, 2].map((i) => (
+                  <li key={i} className="flex items-center gap-3 px-3.5 py-2.5">
+                    <span className="skeleton h-3 w-4 rounded" />
+                    <span className="flex-1 space-y-1.5">
+                      <span className="skeleton block h-3 w-3/4 rounded" />
+                      <span className="skeleton block h-2.5 w-1/3 rounded" />
+                    </span>
+                    <span className="skeleton h-3 w-8 rounded" />
+                  </li>
+                ))
+              ) : shown === "empty" ? (
+                <li className="grid flex-1 place-items-center gap-2 px-4 text-center">
+                  <span>
+                    <span className="block text-sm font-semibold text-ink">No tracks yet</span>
+                    <span className="mt-1 block text-xs text-ink-soft">Save a song and it will show up here.</span>
+                    <span className="mt-3 inline-flex rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-paper">Browse music</span>
                   </span>
-                  <span className="font-mono text-xs tabular-nums text-ink-soft">{t.time}</span>
                 </li>
-              ))}
+              ) : (
+                <li className="grid flex-1 place-items-center gap-2 px-4 text-center">
+                  <span>
+                    <span className="block text-sm font-semibold text-ink">Couldn&rsquo;t load your tracks</span>
+                    <span className="mt-1 block text-xs text-ink-soft">Check your connection and try again.</span>
+                    <span className="mt-3 inline-flex rounded-full border border-ink/20 px-3 py-1.5 text-xs font-medium text-ink">Retry</span>
+                  </span>
+                </li>
+              )}
               <span className="absolute -right-3 top-3"><Marker id="hover" open={open === "hover"} onToggle={toggle} /></span>
               <span className="absolute -bottom-3 -left-3"><Marker id="overflow" open={open === "overflow"} onToggle={toggle} /></span>
+              <span className="absolute -left-3 top-12"><Marker id="states" open={open === "states"} onToggle={toggle} /></span>
             </ul>
           </div>
         </div>
       </div>
 
-      <div
-        className={`fixed inset-x-3 bottom-3 z-40 max-h-[42vh] overflow-y-auto rounded-2xl border-2 border-ink/10 bg-paper p-5 shadow-2xl transition-transform duration-300 md:static md:z-auto md:max-h-none md:translate-y-0 md:overflow-visible md:rounded-none md:border-0 md:bg-transparent md:p-0 md:pt-4 md:shadow-none ${
-          sheet && inView && issue ? "translate-y-0" : "translate-y-[calc(100%+1rem)]"
-        }`}
-      >
-        <button
-          type="button"
-          onClick={() => setSheet(false)}
-          aria-label="Close"
-          className="absolute right-3 top-3 grid size-8 cursor-pointer place-items-center rounded-full text-ink-soft hover:text-ink md:hidden"
-        >
-          ✕
-        </button>
+      <div data-panel className="max-md:hidden md:min-h-146 md:pt-14">
         <AnimatePresence mode="wait">
           {issue ? (
             <motion.div
@@ -253,7 +307,30 @@ export function DetailsDemo() {
               transition={{ duration: 0.22 }}
               className="grid gap-6"
             >
-              <h4 className="pr-8 font-display max-md:-order-2 max-md:text-xl text-2xl font-bold tracking-tight text-ink">{issue.title}</h4>
+              <div className="flex items-center justify-between gap-4">
+                <h4 className="font-display text-xl font-semibold tracking-tight text-ink md:text-2xl">{issue.title}</h4>
+                <div className="flex shrink-0 items-center gap-1 text-sm text-ink-soft">
+                  <button
+                    type="button"
+                    aria-label="Previous check"
+                    onClick={() => setOpen(ORDER[(ORDER.indexOf(open!) + ORDER.length - 1) % ORDER.length])}
+                    className="grid size-8 cursor-pointer place-items-center rounded-full transition-colors hover:bg-ink/8 hover:text-ink"
+                  >
+                    ←
+                  </button>
+                  <span className="w-12 text-center tabular-nums">
+                    {issue.n} / {ORDER.length}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Next check"
+                    onClick={() => setOpen(ORDER[(ORDER.indexOf(open!) + 1) % ORDER.length])}
+                    className="grid size-8 cursor-pointer place-items-center rounded-full transition-colors hover:bg-ink/8 hover:text-ink"
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
 
               <ol className="grid gap-4">
                 {(
@@ -268,19 +345,38 @@ export function DetailsDemo() {
                     initial={{ opacity: 0, x: -6 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.06 * i, duration: 0.25 }}
-                    className="grid grid-cols-[96px_1fr] gap-4 text-[15px] leading-relaxed"
+                    className="grid gap-1 text-[15px] leading-relaxed sm:grid-cols-[96px_1fr] sm:gap-4"
                   >
-                    <span className="pt-1 font-mono text-[11px] uppercase tracking-[0.15em] text-accent-deep">{step}</span>
+                    <span className="text-sm font-medium text-ink">{step}</span>
                     <span className="text-ink-soft">{text}</span>
                   </motion.li>
                 ))}
               </ol>
 
+              {open === "states" && (
+                <div role="radiogroup" aria-label="List state" className="flex flex-wrap gap-1.5">
+                  {(["ready", "loading", "empty", "error"] as const).map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      role="radio"
+                      aria-checked={status === st}
+                      onClick={() => setStatus(st)}
+                      className={`cursor-pointer rounded-full px-3 py-1 text-[13px] font-medium capitalize transition-colors ${
+                        status === st ? "bg-ink text-paper" : "border border-ink/15 text-ink-soft hover:text-ink"
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <button
                 type="button"
                 onClick={() => open && toggleFix(open)}
                 aria-label={isFixed(open!) ? "Show the original code" : "Apply the fix"}
-                className="group/diff cursor-pointer max-md:-order-1 md:mt-4 overflow-hidden rounded-xl border-2 border-ink/10 bg-paper-dim text-left font-mono text-[12px] leading-relaxed transition-colors hover:border-accent/40"
+                className="group/diff cursor-pointer md:mt-4 overflow-hidden rounded-xl border border-ink/10 bg-ink/3 text-left font-mono text-[12px] leading-relaxed transition-colors hover:border-accent/40"
               >
                 <span
                   className={`flex gap-3 px-3 py-1.5 transition-opacity ${isFixed(open!) ? "opacity-40 line-through decoration-red-500/60" : ""} bg-red-500/10 text-red-600 dark:text-red-400`}
@@ -292,8 +388,8 @@ export function DetailsDemo() {
                   <b className="font-normal">+</b>
                   <span className="min-w-0 wrap-anywhere">{issue.diff.add}</span>
                 </span>
-                <span className="flex justify-end px-3 py-1.5 text-[10px] uppercase tracking-[0.15em] text-ink-soft group-hover/diff:text-ink">
-                  {isFixed(open!) ? "✓ Applied · click to revert" : "Click to apply the fix →"}
+                <span className="flex justify-end px-3 py-2 font-sans text-[13px] font-medium text-ink-soft group-hover/diff:text-ink">
+                  {isFixed(open!) ? "✓ Fixed · undo" : "Apply fix →"}
                 </span>
               </button>
 
@@ -308,12 +404,44 @@ export function DetailsDemo() {
             </motion.div>
           ) : (
             <motion.p key="hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[15px] text-ink-soft">
-              Tap a number to see how I spot it and fix it.
+              Pick a number on the card to see how I spot it and fix it.
             </motion.p>
           )}
         </AnimatePresence>
 
       </div>
+      {(
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:hidden">
+          {ORDER.map((id) => {
+            const it = ISSUES[id];
+            return (
+              <div
+                key={id}
+                data-card={id}
+                onClick={() => setOpen(id)}
+                className={`w-[78%] shrink-0 snap-center rounded-2xl border p-4 transition-colors ${open === id ? "border-accent/50" : "border-ink/10"}`}
+              >
+                <p className="text-xs text-ink-soft">
+                  {it.n} / {ORDER.length}
+                </p>
+                <p className="mt-1 font-display text-lg font-semibold tracking-tight text-ink">{it.title}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{it.spot}</p>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen(id);
+                    toggleFix(id);
+                  }}
+                  className="mt-3 inline-flex cursor-pointer items-center rounded-full bg-ink px-3.5 py-1.5 text-[13px] font-medium text-paper"
+                >
+                  {isFixed(id) ? "✓ Fixed · undo" : "Apply fix"}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
       </div>
     </div>
   );
