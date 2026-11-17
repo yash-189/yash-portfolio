@@ -18,6 +18,15 @@ type Issue = {
   tryIt: { before: string; after: string };
 };
 
+const NOTES: Record<IssueId, string> = {
+  radius: "24 → 12px",
+  play: "+2px right",
+  digits: "tabular-nums",
+  hover: "No shift",
+  overflow: "Truncated",
+  states: "States added",
+};
+
 const ISSUES: Record<IssueId, Issue> = {
   radius: {
     n: 1,
@@ -83,7 +92,7 @@ const TRACKS = [
   { title: "Slow Signals (Extended Late Night Mix)", artist: "Harbour", time: "7:46" },
 ];
 
-function Marker({ id, open, onToggle }: { id: IssueId; open: boolean; onToggle: (id: IssueId, el: HTMLElement) => void }) {
+function Marker({ id, open, pulse, onToggle }: { id: IssueId; open: boolean; pulse: boolean; onToggle: (id: IssueId, el: HTMLElement) => void }) {
   return (
     <button
       type="button"
@@ -92,6 +101,7 @@ function Marker({ id, open, onToggle }: { id: IssueId; open: boolean; onToggle: 
       aria-label={`Issue ${ISSUES[id].n}: ${ISSUES[id].title}`}
       className="group/marker absolute z-10 grid size-6 cursor-pointer place-items-center"
     >
+      {pulse && <span aria-hidden className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-accent/60" />}
             <span className="relative grid size-6 place-items-center rounded-full bg-paper text-[11px] font-semibold text-ink shadow-md ring-1 ring-ink/15 transition-[transform,background-color,color] group-hover/marker:scale-110 group-aria-expanded/marker:bg-accent group-aria-expanded/marker:text-white group-aria-expanded/marker:ring-accent">
         {ISSUES[id].n}
       </span>
@@ -120,6 +130,39 @@ export function DetailsDemo() {
       return next;
     });
   const [open, setOpen] = useState<IssueId | null>("radius");
+  const [pulse, setPulse] = useState<IssueId | null>(null);
+  const [note, setNote] = useState<{ text: string; top: number; left: number; key: number } | null>(null);
+  const noteTimer = useRef<number | undefined>(undefined);
+  const focusFix = (id: IssueId, button: HTMLElement) => {
+    setOpen(id);
+    const player = button.closest("[data-demo]")?.querySelector<HTMLElement>("[data-player]");
+    const box = player?.getBoundingClientRect();
+    const visible = box && box.top >= 0 && box.bottom <= window.innerHeight;
+    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (player && !visible) player.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+    setPulse(id);
+    const undo = isFixed(id);
+    window.setTimeout(() => {
+      toggleFix(id);
+      const target = player?.querySelector<HTMLElement>(`[data-region~="${id}"]`);
+      if (player && target) {
+        const outer = player.getBoundingClientRect();
+        const inner = target.getBoundingClientRect();
+        const center = inner.left - outer.left + inner.width / 2;
+        setNote({
+          text: undo ? "Undone" : NOTES[id],
+          top: inner.bottom - outer.top + 10,
+          left: Math.min(Math.max(center, 60), outer.width - 60),
+          key: Date.now(),
+        });
+        window.clearTimeout(noteTimer.current);
+        noteTimer.current = window.setTimeout(() => setNote(null), 2200);
+      }
+    }, visible ? 450 : 800);
+    window.setTimeout(() => {
+      setPulse((p) => (p === id ? null : p));
+    }, 2400);
+  };
   const toggle = (id: IssueId, el: HTMLElement) => {
     setOpen(id);
     if (!window.matchMedia("(max-width: 767px)").matches) return;
@@ -153,7 +196,7 @@ export function DetailsDemo() {
         </div>
       </div>
 
-      <div className="glass-card relative grid items-start gap-8 rounded-3xl p-4 md:grid-cols-2 md:gap-12 md:p-8">
+      <div className="glass-card details-shell relative grid items-start gap-6 rounded-3xl md:grid-cols-2 md:gap-12 md:p-8">
       <div className="absolute top-5 left-1/2 z-20 -translate-x-1/2 md:top-8 md:right-8 md:left-auto md:translate-x-0">
         <div role="radiogroup" aria-label="Version" className="glass-dock relative flex rounded-full p-1">
           {(["Before", "After"] as const).map((label) => {
@@ -183,12 +226,29 @@ export function DetailsDemo() {
         </div>
       </div>
       <div className="grid place-items-center px-2 pt-16 pb-6 md:self-stretch md:border-r md:border-ink/10 md:px-5 md:py-10 md:pr-12">
-        <div className="relative w-full max-w-70">
-          <div className="rounded-3xl bg-paper p-3 shadow-[0_24px_50px_-28px_rgb(13_18_32/0.45)]">
+        <div data-player data-spot={pulse ?? undefined} className="relative w-full max-w-70">
+          <AnimatePresence>
+            {note && (
+              <motion.span
+                key={note.key}
+                role="status"
+                initial={{ opacity: 0, y: -4, x: "-50%" }}
+                animate={{ opacity: 1, y: 0, x: "-50%" }}
+                exit={{ opacity: 0, x: "-50%" }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                className="pointer-events-none absolute z-30 rounded-full bg-ink px-2.5 py-1 font-mono text-[11px] font-medium whitespace-nowrap text-paper shadow-[0_6px_16px_-6px_rgb(0_0_0/0.35)]"
+                style={{ top: note.top, left: note.left }}
+              >
+                {note.text}
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <div className="rounded-3xl bg-paper p-3 shadow-[0_24px_50px_-28px_rgb(13_18_32/0.45)] ring-1 ring-ink/10 md:ring-0">
             <div className="relative">
               <motion.div
                 animate={{ borderRadius: isFixed("radius") ? 12 : 24 }}
                 transition={{ type: "spring", stiffness: 260, damping: 26 }}
+                data-region="radius"
                 className="aspect-4/3 w-full overflow-hidden bg-[radial-gradient(120%_90%_at_20%_10%,#ff8a5b_0%,#c2368f_45%,#2a1e5c_100%)]"
               >
                 <div className="flex h-full flex-col justify-end p-4 text-white">
@@ -196,9 +256,9 @@ export function DetailsDemo() {
                   <p className="font-display text-2xl font-bold">Night Drive</p>
                 </div>
               </motion.div>
-              <span className="absolute -left-3 -top-3"><Marker id="radius" open={open === "radius"} onToggle={toggle} /></span>
+              <span data-region="radius" className="absolute -left-3 -top-3"><Marker id="radius" open={open === "radius"} pulse={pulse === "radius"} onToggle={toggle} /></span>
 
-              <div className="absolute -bottom-6 right-4">
+              <div data-region="play" className="absolute -bottom-6 right-4">
                 <button
                   type="button"
                   onClick={music.toggle}
@@ -225,20 +285,20 @@ export function DetailsDemo() {
                     </motion.span>
                   )}
                 </AnimatePresence>
-                <span className="absolute -right-3 -top-3"><Marker id="play" open={open === "play"} onToggle={toggle} /></span>
+                <span className="absolute -right-3 -top-3"><Marker id="play" open={open === "play"} pulse={pulse === "play"} onToggle={toggle} /></span>
               </div>
             </div>
 
-            <div className="relative mt-9 flex items-center gap-3 px-3">
+            <div data-region="digits" className="relative mt-9 flex items-center gap-3 px-3">
               <time className={`text-xs text-ink-soft ${isFixed("digits") ? "tabular-nums" : "[font-variant-numeric:proportional-nums]"}`}>{clock}</time>
               <span className="relative h-1 flex-1 overflow-hidden rounded-full bg-ink/10">
                 <span className="absolute inset-y-0 left-0 rounded-full bg-accent transition-[width] duration-1000 ease-linear" style={{ width: `${(elapsed / 243) * 100}%` }} />
               </span>
               <time className={`text-xs text-ink-soft ${isFixed("digits") ? "tabular-nums" : "[font-variant-numeric:proportional-nums]"}`}>4:03</time>
-              <span className="absolute -left-3 -top-3"><Marker id="digits" open={open === "digits"} onToggle={toggle} /></span>
+              <span className="absolute -left-3 -top-3"><Marker id="digits" open={open === "digits"} pulse={pulse === "digits"} onToggle={toggle} /></span>
             </div>
 
-            <ul className="relative mt-3 flex min-h-46 flex-col gap-1">
+            <ul data-region="hover overflow states" className="relative mt-3 flex min-h-46 flex-col gap-1">
               {shown === "ready" ? (
                 <>
 
@@ -288,9 +348,9 @@ export function DetailsDemo() {
                   </span>
                 </li>
               )}
-              <span className="absolute -right-3 top-3"><Marker id="hover" open={open === "hover"} onToggle={toggle} /></span>
-              <span className="absolute -bottom-3 -left-3"><Marker id="overflow" open={open === "overflow"} onToggle={toggle} /></span>
-              <span className="absolute -left-3 top-12"><Marker id="states" open={open === "states"} onToggle={toggle} /></span>
+              <span className="absolute -right-3 top-3"><Marker id="hover" open={open === "hover"} pulse={pulse === "hover"} onToggle={toggle} /></span>
+              <span className="absolute -bottom-3 -left-3"><Marker id="overflow" open={open === "overflow"} pulse={pulse === "overflow"} onToggle={toggle} /></span>
+              <span className="absolute -left-3 top-12"><Marker id="states" open={open === "states"} pulse={pulse === "states"} onToggle={toggle} /></span>
             </ul>
           </div>
         </div>
@@ -374,7 +434,7 @@ export function DetailsDemo() {
 
               <button
                 type="button"
-                onClick={() => open && toggleFix(open)}
+                onClick={(e) => open && focusFix(open, e.currentTarget)}
                 aria-label={isFixed(open!) ? "Show the original code" : "Apply the fix"}
                 className="group/diff cursor-pointer md:mt-4 overflow-hidden rounded-xl border border-ink/10 bg-ink/3 text-left font-mono text-[12px] leading-relaxed transition-colors hover:border-accent/40"
               >
@@ -410,8 +470,8 @@ export function DetailsDemo() {
         </AnimatePresence>
 
       </div>
-      {(
-        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:hidden">
+      <>
+        <div className="-mx-6 flex min-w-0 snap-x snap-mandatory scroll-px-6 gap-3 overflow-x-auto px-6 pb-2 md:hidden">
           {ORDER.map((id) => {
             const it = ISSUES[id];
             return (
@@ -426,12 +486,36 @@ export function DetailsDemo() {
                 </p>
                 <p className="mt-1 font-display text-lg font-semibold tracking-tight text-ink">{it.title}</p>
                 <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{it.spot}</p>
+                {id === "states" && (
+                  <div role="radiogroup" aria-label="List state" className="mt-3 flex flex-wrap gap-1.5">
+                    {(["ready", "loading", "empty", "error"] as const).map((st) => (
+                      <button
+                        key={st}
+                        type="button"
+                        role="radio"
+                        aria-checked={open === "states" && status === st}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpen("states");
+                          setStatus(st);
+                          const player = e.currentTarget.closest("[data-demo]")?.querySelector<HTMLElement>("[data-player]");
+                          const box = player?.getBoundingClientRect();
+                          if (player && box && (box.top < 0 || box.bottom > window.innerHeight)) player.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }}
+                        className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
+                          open === "states" && status === st ? "bg-ink text-paper" : "border border-ink/15 text-ink-soft"
+                        }`}
+                      >
+                        {st}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setOpen(id);
-                    toggleFix(id);
+                    focusFix(id, e.currentTarget);
                   }}
                   className="mt-3 inline-flex cursor-pointer items-center rounded-full bg-ink px-3.5 py-1.5 text-[13px] font-medium text-paper"
                 >
@@ -441,7 +525,7 @@ export function DetailsDemo() {
             );
           })}
         </div>
-      )}
+      </>
       </div>
     </div>
   );

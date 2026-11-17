@@ -274,6 +274,16 @@ html.site-scope {
     0 20px 40px -24px rgb(0 0 0 / 0.6);
 }
 
+@media (max-width: 767px) {
+  .details-shell,
+  .dark .details-shell {
+    background: none;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+}
+
 .solid-card {
   background: #ffffff;
   border: 1px solid rgb(13 18 32 / 0.08);
@@ -439,4 +449,38 @@ html.site-scope {
     stroke-dashoffset: 0;
     background-size: 100% 100%;
   }
+}
+
+[data-player] [data-region] {
+  transition: opacity 350ms var(--snap), filter 350ms var(--snap);
+}
+
+[data-spot="radius"] [data-region]:not([data-region~="radius"]) {
+  opacity: 0.25;
+  filter: saturate(0.4);
+}
+
+[data-spot="play"] [data-region]:not([data-region~="play"]) {
+  opacity: 0.25;
+  filter: saturate(0.4);
+}
+
+[data-spot="digits"] [data-region]:not([data-region~="digits"]) {
+  opacity: 0.25;
+  filter: saturate(0.4);
+}
+
+[data-spot="hover"] [data-region]:not([data-region~="hover"]) {
+  opacity: 0.25;
+  filter: saturate(0.4);
+}
+
+[data-spot="overflow"] [data-region]:not([data-region~="overflow"]) {
+  opacity: 0.25;
+  filter: saturate(0.4);
+}
+
+[data-spot="states"] [data-region]:not([data-region~="states"]) {
+  opacity: 0.25;
+  filter: saturate(0.4);
 }
