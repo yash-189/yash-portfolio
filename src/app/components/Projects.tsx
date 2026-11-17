@@ -94,14 +94,16 @@ function LeadTile({ project, onOpen }: { project: Project; onOpen: () => void })
         aria-label={`Open the ${project.name} case study`}
         className="block cursor-pointer self-center overflow-hidden rounded-[14px] md:col-span-7 md:rounded-xl"
       >
-        <Image
-          src={project.image}
-          alt={`${project.name} screens`}
-          width={imageSize[project.id]?.[0] ?? 1600}
-          height={imageSize[project.id]?.[1] ?? 1000}
-          sizes="(min-width: 1152px) 640px, 100vw"
-          className="aspect-video h-auto w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/tile:scale-[1.02]"
-        />
+        <motion.div layoutId={`${project.id}-image`} transition={{ type: "spring", stiffness: 260, damping: 32, mass: 0.9 }}>
+          <Image
+            src={project.image}
+            alt={`${project.name} screens`}
+            width={imageSize[project.id]?.[0] ?? 1600}
+            height={imageSize[project.id]?.[1] ?? 1000}
+            sizes="(min-width: 1152px) 640px, 100vw"
+            className="aspect-video h-auto w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/tile:scale-[1.02]"
+          />
+        </motion.div>
       </button>
       <div className="flex flex-col justify-between gap-8 px-3 pt-6 pb-3 md:col-span-5 md:px-8 md:py-6">
         <div>
@@ -144,7 +146,7 @@ function SideTile({ project, lead, onOpen, index }: { project: Project; lead: bo
         aria-label={`Open the ${project.name} case study`}
         className="block w-full cursor-pointer overflow-hidden rounded-[14px] md:rounded-xl"
       >
-        <div className="overflow-hidden rounded-[14px] md:rounded-xl">
+        <motion.div layoutId={`${project.id}-image`} transition={{ type: "spring", stiffness: 260, damping: 32, mass: 0.9 }} className="overflow-hidden rounded-[14px] md:rounded-xl">
           <Image
             src={project.image}
             alt={`${project.name} screens`}
@@ -153,7 +155,7 @@ function SideTile({ project, lead, onOpen, index }: { project: Project; lead: bo
             sizes={lead ? "(min-width: 1152px) 1100px, 100vw" : "(min-width: 1152px) 540px, 100vw"}
             className={`h-auto w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/tile:scale-[1.02] ${lead ? "aspect-video" : "aspect-16/10"}`}
           />
-        </div>
+        </motion.div>
       </button>
 
       <div className="flex flex-1 flex-col px-3 pt-5 pb-3 md:px-4 md:pb-4">
@@ -287,9 +289,9 @@ function ProjectDialog({
         aria-modal="true"
         aria-labelledby={`${project.id}-title`}
         onClick={(e) => e.stopPropagation()}
-        initial={{ y: 40, opacity: 0, scale: 0.98 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: 40, opacity: 0, scale: 0.98 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 0.35, ease }}
         className="relative mx-auto min-h-[calc(100%-2.5rem)] max-w-5xl bg-paper shadow-[0_30px_80px_-20px_rgb(0_0_0/0.35)] ring-1 ring-ink/10 md:bg-paper/75 md:backdrop-blur-[24px] md:backdrop-saturate-[1.8] md:dark:bg-paper/70 overflow-hidden rounded-t-3xl md:min-h-0 md:rounded-3xl"
       >
@@ -306,7 +308,7 @@ function ProjectDialog({
         </div>
 
         <div className="relative aspect-16/10 bg-paper-dim">
-          <motion.div layoutId={`${project.id}-image`} className="absolute inset-0">
+          <motion.div layoutId={`${project.id}-image`} transition={{ type: "spring", stiffness: 260, damping: 32, mass: 0.9 }} className="absolute inset-0">
             <Image src={project.image} alt={`${project.name} screens`} fill loading="eager" fetchPriority="high" sizes="(min-width: 1152px) 1100px, 100vw" className="object-cover" />
           </motion.div>
           <AnimatePresence>
