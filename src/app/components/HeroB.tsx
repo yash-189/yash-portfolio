@@ -165,7 +165,7 @@ export function HeroB() {
   };
 
   return (
-    <section id="top" className="relative flex flex-col justify-between px-6 pt-32 pb-16 md:min-h-svh md:pt-40 md:pb-10">
+    <section id="top" className="relative flex flex-col justify-between px-6 pt-32 pb-16 max-md:[@media(max-height:720px)]:pt-14 md:min-h-svh md:pt-40 md:pb-10">
       <div className="relative mx-auto flex max-w-5xl flex-col items-center text-center">
         <Brackets>Hi, I&rsquo;m Yash Saini</Brackets>
         <motion.h1 {...rise(0.06)} className="mt-6 font-display text-[clamp(2.2rem,7vw,4.5rem)] leading-[1.05] font-bold tracking-tight text-ink">
@@ -215,7 +215,7 @@ export function HeroB() {
           <ScrollBadge />
         </motion.div>
 
-        <motion.ul {...rise(0.24)} aria-label="Daily stack" className="mt-14 flex flex-wrap items-center justify-center gap-2">
+        <motion.ul {...rise(0.24)} aria-label="Daily stack" className="mt-8 md:mt-14 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 md:gap-2">
           {["React", "Next.js", "React Native", "TypeScript", "Tailwind CSS"].map((t) => (
             <li key={t} data-focus={t === "React Native" ? "chip" : undefined} className="inline-flex items-center gap-2 rounded-full border border-ink-soft/20 px-3 py-1.5 text-[13px] font-medium text-ink-soft">
               <TechLogo name={t} brand className="size-3.5" />
