@@ -7,7 +7,7 @@ import { Projects } from "./Projects";
 import { ScatteredLogos } from "./ScatteredLogos";
 import { Skills } from "./Skills";
 
-export function Experience() {
+export function HomePage() {
   return (
     <>
       <div className="grain" aria-hidden />
