@@ -23,8 +23,8 @@
   --ink-soft: #626a7b;
   --paper: #ffffff;
   --paper-dim: #f4f5f7;
-  --accent: #2347d6;
-  --accent-deep: #1c38ab;
+  --accent: #2a4fe8;
+  --accent-deep: #1d3cbf;
   --sand: #c9d2e6;
   --moss: #172554;
   --band: #0d1220;
@@ -41,10 +41,10 @@
 }
 
 .site-scope.dark {
-  --ink: #eceef3;
-  --ink-soft: #9aa2b3;
-  --paper: #080b12;
-  --paper-dim: #121a2c;
+  --ink: #f2f4f8;
+  --ink-soft: #a3abbb;
+  --paper: #05070c;
+  --paper-dim: #0e1422;
   --accent: #5b7cff;
   --accent-deep: #8aa2ff;
   --sand: #8f9bb8;
@@ -64,6 +64,7 @@ html.site-scope {
 }
 
 @layer base {
+
   .site-scope a,
   .site-scope button {
     color: inherit;
@@ -92,7 +93,7 @@ html.site-scope {
 
 .dark .grain {
   mix-blend-mode: screen;
-  opacity: 0.035;
+  opacity: 0;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
@@ -136,12 +137,12 @@ html.site-scope {
   transform-origin: left;
 }
 
-.btn-fill > span {
+.btn-fill>span {
   transition: letter-spacing 450ms var(--snap);
 }
 
-.btn-fill:hover > span,
-.btn-fill:focus-visible > span {
+.btn-fill:hover>span,
+.btn-fill:focus-visible>span {
   letter-spacing: 0.2em;
 }
 
@@ -150,6 +151,7 @@ html.site-scope {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .site-scope *,
   .site-scope *::before,
   .site-scope *::after {
@@ -168,18 +170,17 @@ html.site-scope {
   from {
     background-position: 200% 0;
   }
+
   to {
     background-position: -200% 0;
   }
 }
 
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--paper-dim) 25%,
-    color-mix(in oklab, var(--paper-dim), var(--paper) 65%) 50%,
-    var(--paper-dim) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--paper-dim) 25%,
+      color-mix(in oklab, var(--paper-dim), var(--paper) 65%) 50%,
+      var(--paper-dim) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s linear infinite;
 }
@@ -194,6 +195,7 @@ html.site-scope {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-50%);
   }
@@ -211,8 +213,6 @@ html.site-scope {
 
 .glass-dock {
   background: rgb(255 255 255 / 0.82);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border: 1px solid rgb(13 18 32 / 0.08);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
@@ -229,6 +229,26 @@ html.site-scope {
     inset 0 1px 0 rgb(255 255 255 / 0.14),
     inset 0 -1px 0 rgb(0 0 0 / 0.3),
     0 18px 40px -14px rgb(0 0 0 / 0.7);
+}
+
+.modal-backdrop {
+  background: color-mix(in oklab, var(--ink) 18%, transparent);
+}
+
+.dark .modal-backdrop {
+  background: color-mix(in oklab, var(--paper) 55%, transparent);
+}
+
+@media (max-width: 767px) {
+  .glass-dock {
+    background: color-mix(in oklab, color-mix(in oklab, var(--ink) 4%, var(--paper)) 55%, transparent);
+  }
+
+  .dark .glass-dock {
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--ink) 3%, transparent), transparent),
+      color-mix(in oklab, var(--paper) 60%, transparent);
+  }
 }
 
 .card-trace {
@@ -278,15 +298,18 @@ html.site-scope {
 .sh-line {
   display: none;
 }
+
 .sh-row {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
+
 .sh-accent {
   position: relative;
   display: inline-block;
 }
+
 [data-hs] .sh-label {
   display: flex;
   align-items: center;
@@ -299,6 +322,7 @@ html.site-scope {
   text-transform: uppercase;
   color: color-mix(in oklab, var(--accent) 85%, var(--ink));
 }
+
 [data-hs] .sh-label::before {
   content: "";
   width: 1.75rem;
@@ -317,6 +341,7 @@ html.site-scope {
   line-height: 0.9;
   letter-spacing: -0.045em;
 }
+
 [data-hs~="d"] .sh-ghost {
   display: block;
   position: absolute;
@@ -337,6 +362,7 @@ html.site-scope {
   background-clip: text;
   pointer-events: none;
 }
+
 [data-hs~="e"] .sh-under {
   display: block;
   position: absolute;
@@ -346,6 +372,7 @@ html.site-scope {
   height: 0.3em;
   overflow: visible;
 }
+
 [data-hs~="f"] .sh-ring,
 .sh-circled .sh-ring {
   display: block;
@@ -356,6 +383,7 @@ html.site-scope {
   height: 150%;
   overflow: visible;
 }
+
 .sh-under path,
 .sh-ring path {
   fill: none;
@@ -367,21 +395,25 @@ html.site-scope {
   stroke-dashoffset: 700;
   animation: sh-draw 1.1s 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
+
 @keyframes sh-draw {
   to {
     stroke-dashoffset: 0;
   }
 }
+
 [data-hs~="g"] .sh-accent {
   background: linear-gradient(transparent 60%, color-mix(in oklab, var(--accent) 40%, transparent) 60%, color-mix(in oklab, var(--accent) 40%, transparent) 92%, transparent 92%) no-repeat 0 0 / 0% 100%;
   animation: sh-swipe 0.9s 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
   padding: 0 0.06em;
 }
+
 @keyframes sh-swipe {
   to {
     background-size: 100% 100%;
   }
 }
+
 [data-hs~="h"] .sh-line {
   display: block;
   flex: 1;
@@ -390,12 +422,15 @@ html.site-scope {
   transform-origin: left;
   animation: sh-grow 1s 0.4s cubic-bezier(0.65, 0, 0.35, 1) both;
 }
+
 @keyframes sh-grow {
   from {
     transform: scaleX(0);
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
+
   .sh-under path,
   .sh-ring path,
   [data-hs~="g"] .sh-accent,
@@ -405,4 +440,3 @@ html.site-scope {
     background-size: 100% 100%;
   }
 }
-
