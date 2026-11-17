@@ -307,7 +307,7 @@ function ProjectDialog({
 
         <div className="relative aspect-16/10 bg-paper-dim">
           <motion.div layoutId={`${project.id}-image`} className="absolute inset-0">
-            <Image src={project.image} alt={`${project.name} screens`} fill sizes="(min-width: 1024px) 1024px, 100vw" className="object-cover" />
+            <Image src={project.image} alt={`${project.name} screens`} fill loading="eager" fetchPriority="high" sizes="(min-width: 1152px) 1100px, 100vw" className="object-cover" />
           </motion.div>
           <AnimatePresence>
             {shot > 0 && (
@@ -319,7 +319,7 @@ function ProjectDialog({
                 transition={{ duration: 0.25 }}
                 className="absolute inset-0 bg-paper-dim"
               >
-                <Image src={current.src} alt={current.alt} fill sizes="(min-width: 1024px) 1024px, 100vw" className="object-contain" />
+                <Image src={current.src} alt={current.alt} fill loading="eager" sizes="(min-width: 1152px) 1100px, 100vw" className="object-contain" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -337,7 +337,7 @@ function ProjectDialog({
                 className={`relative aspect-16/10 w-24 shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 transition-[border-color,opacity] md:w-28 ${shot === i ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"
                   }`}
               >
-                <Image src={g.src} alt="" fill sizes="112px" className="object-cover" />
+                <Image src={g.src} alt="" fill loading="eager" sizes="112px" className="object-cover" />
               </button>
             ))}
           </div>
