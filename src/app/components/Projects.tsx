@@ -111,7 +111,7 @@ function LeadTile({ project, onOpen }: { project: Project; onOpen: () => void })
               {project.name}
             </button>
           </h4>
-          <p className="mt-3 text-base leading-relaxed text-ink-soft md:text-[17px]">{project.summary}</p>
+          <p onClick={onOpen} className="mt-3 cursor-pointer text-base leading-relaxed text-ink-soft md:text-[17px]">{project.summary}</p>
           <div className="mt-6">
             <Stack items={project.stack} max={8} pill />
           </div>
@@ -163,7 +163,7 @@ function SideTile({ project, lead, onOpen, index }: { project: Project; lead: bo
             {project.name}
           </button>
         </h4>
-        <p className="mt-2 max-w-[48ch] text-base leading-relaxed text-ink-soft">{story?.hook ?? project.summary}</p>
+        <p onClick={onOpen} className="mt-2 max-w-[48ch] cursor-pointer text-base leading-relaxed text-ink-soft">{story?.hook ?? project.summary}</p>
         <div className="mt-4 mb-6">
           <Stack items={project.stack} pill />
         </div>
@@ -257,50 +257,52 @@ function ProjectDialog({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
       onClick={onClose}
-      className="fixed inset-0 z-60 overflow-y-auto overscroll-contain bg-[rgb(8_11_18/0.6)] px-3 py-3 backdrop-blur-sm md:px-6 md:py-10"
+      className="fixed inset-0 z-60 overflow-y-auto overscroll-contain pt-10 md:px-6 md:py-10"
     >
-      <div
+      <div aria-hidden className="modal-backdrop pointer-events-none fixed inset-0 -z-10 md:backdrop-blur-xs" />
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onStep(-1);
+        }}
+        aria-label="Previous project"
+        className="glass-dock fixed top-1/2 backdrop-blur-[20px] backdrop-saturate-[1.8] left-6 z-10 hidden size-12 -translate-y-1/2 cursor-pointer place-items-center rounded-full text-ink transition-transform hover:scale-105 md:grid"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+      </button>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onStep(1);
+        }}
+        aria-label="Next project"
+        className="glass-dock fixed top-1/2 backdrop-blur-[20px] backdrop-saturate-[1.8] right-6 z-10 hidden size-12 -translate-y-1/2 cursor-pointer place-items-center rounded-full text-ink transition-transform hover:scale-105 md:grid"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden className="size-5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+      </button>
+      <motion.div
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${project.id}-title`}
         onClick={(e) => e.stopPropagation()}
-        className="solid-card relative mx-auto max-w-5xl overflow-hidden rounded-3xl"
+        initial={{ y: 40, opacity: 0, scale: 0.98 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 40, opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.35, ease }}
+        className="relative mx-auto min-h-[calc(100%-2.5rem)] max-w-5xl bg-paper shadow-[0_30px_80px_-20px_rgb(0_0_0/0.35)] ring-1 ring-ink/10 md:bg-paper/75 md:backdrop-blur-[24px] md:backdrop-saturate-[1.8] md:dark:bg-paper/70 overflow-hidden rounded-t-3xl md:min-h-0 md:rounded-3xl"
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-ink/10 bg-paper/85 px-5 py-3 backdrop-blur-md md:px-8">
-          <span className="truncate text-sm font-medium text-ink">
-            {project.name}
-            <span className="ml-2 font-normal text-ink-soft">
-              {index + 1} / {projects.length}
-            </span>
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => onStep(-1)}
-              aria-label="Previous project"
-              className="grid size-9 cursor-pointer place-items-center rounded-full text-ink-soft transition-colors hover:bg-ink/8 hover:text-ink"
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              onClick={() => onStep(1)}
-              aria-label="Next project"
-              className="grid size-9 cursor-pointer place-items-center rounded-full text-ink-soft transition-colors hover:bg-ink/8 hover:text-ink"
-            >
-              →
-            </button>
-            <span aria-hidden className="mx-1 h-5 w-px bg-ink/10" />
-            <button
-              ref={closeRef}
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              className="grid size-9 cursor-pointer place-items-center rounded-full text-xl leading-none text-ink transition-[background-color,rotate] hover:rotate-90 hover:bg-ink/8"
-            >
-              ×
-            </button>
-          </div>
+        <div className="sticky top-0 z-20 h-0">
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="glass-dock absolute top-4 right-4 backdrop-blur-[20px] backdrop-saturate-[1.8] grid size-10 cursor-pointer place-items-center rounded-full text-ink transition-transform hover:rotate-90 md:top-5 md:right-5"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden className="size-4.5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
         </div>
 
         <div className="relative aspect-16/10 bg-paper-dim">
@@ -433,7 +435,7 @@ function ProjectDialog({
             →
           </span>
         </button>
-      </div>
+      </motion.div>
     </motion.div>,
     document.body,
   );
@@ -441,7 +443,20 @@ function ProjectDialog({
 
 export function Projects() {
   const [openId, setOpenId] = useState<string | null>(null);
-  const close = useCallback(() => setOpenId(null), []);
+  const open = useCallback((id: string) => {
+    if (!window.history.state?.caseStudy) window.history.pushState({ caseStudy: true }, "");
+    setOpenId(id);
+  }, []);
+  const close = useCallback(() => {
+    if (window.history.state?.caseStudy) window.history.back();
+    else setOpenId(null);
+  }, []);
+
+  useEffect(() => {
+    const onPop = () => setOpenId(null);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
   const step = useCallback(
     (dir: 1 | -1) =>
       setOpenId((id) => {
@@ -485,7 +500,7 @@ export function Projects() {
         </div>
       </motion.div>
 
-      <SideProjectGrid onOpen={setOpenId} />
+      <SideProjectGrid onOpen={open} />
 
       <AnimatePresence>
         {openProject && <ProjectDialog project={openProject} onClose={close} onStep={step} />}

@@ -18,40 +18,40 @@ type Section = (typeof SECTIONS)[number];
 const stroke = {
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 1.7,
+  strokeWidth: 1.5,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
 };
 
 const icons: Record<string, ReactNode> = {
-  top: <path {...stroke} d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z" />,
+  top: (
+    <g {...stroke}>
+      <path d="m9.02 2.84-5.39 4.2C2.73 7.74 2 9.23 2 10.36v7.41c0 2.32 1.89 4.22 4.21 4.22h11.58c2.32 0 4.21-1.9 4.21-4.21V10.5c0-1.21-.81-2.76-1.8-3.45l-6.18-4.33c-1.4-.98-3.65-.93-5 .12ZM12 17.99v-3" />
+    </g>
+  ),
   about: (
     <g {...stroke}>
-      <circle cx="12" cy="8.5" r="3.5" />
-      <path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5" />
+      <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10ZM20.59 22c0-3.87-3.85-7-8.59-7s-8.59 3.13-8.59 7" />
     </g>
   ),
   work: (
     <g {...stroke}>
-      <rect x="3.5" y="7" width="17" height="12.5" rx="2" />
-      <path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3.5 12.5h17" />
+      <path d="M8 22h8c4.02 0 4.74-1.61 4.95-3.57l.75-8C21.97 7.99 21.27 6 17 6H7c-4.27 0-4.97 1.99-4.7 4.43l.75 8C3.26 20.39 3.98 22 8 22ZM8 6v-.8C8 3.43 8 2 11.2 2h1.6C16 2 16 3.43 16 5.2V6" />
+      <path d="M14 13v1.02c0 1.09-.01 1.98-2 1.98-1.98 0-2-.88-2-1.97V13c0-1 0-1 1-1h2c1 0 1 0 1 1ZM21.65 11A16.484 16.484 0 0 1 14 14.02M2.62 11.27c2.25 1.54 4.79 2.47 7.38 2.76" />
     </g>
   ),
   skills: (
     <g {...stroke}>
-      <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
-      <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
-      <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
-      <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+      <path d="M5 10h2c2 0 3-1 3-3V5c0-2-1-3-3-3H5C3 2 2 3 2 5v2c0 2 1 3 3 3ZM17 10h2c2 0 3-1 3-3V5c0-2-1-3-3-3h-2c-2 0-3 1-3 3v2c0 2 1 3 3 3ZM17 22h2c2 0 3-1 3-3v-2c0-2-1-3-3-3h-2c-2 0-3 1-3 3v2c0 2 1 3 3 3ZM5 22h2c2 0 3-1 3-3v-2c0-2-1-3-3-3H5c-2 0-3 1-3 3v2c0 2 1 3 3 3Z" />
     </g>
   ),
   contact: (
-    <g {...stroke}>
+    <g fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.2A8 8 0 1 1 20 12z" />
     </g>
   ),
   email: (
-    <g {...stroke}>
+    <g fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
       <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
       <path d="m4 7 8 6 8-6" />
     </g>
@@ -64,11 +64,15 @@ const icons: Record<string, ReactNode> = {
   ),
   sun: (
     <g {...stroke}>
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" />
+      <path d="M12 18.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Z" />
+      <path d="m19.14 19.14-.13-.13m0-14.02.13-.13-.13.13ZM4.86 19.14l.13-.13-.13.13ZM12 2.08V2v.08ZM12 22v-.08.08ZM2.08 12H2h.08ZM22 12h-.08.08ZM4.99 4.99l-.13-.13.13.13Z" />
     </g>
   ),
-  moon: <path {...stroke} d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z" />,
+  moon: (
+    <g {...stroke}>
+      <path d="M2.03 12.42c.36 5.15 4.73 9.34 9.96 9.57 3.69.16 6.99-1.56 8.97-4.27.82-1.11.38-1.85-.99-1.6-.67.12-1.36.17-2.08.14C13 16.06 9 11.97 8.98 7.14c-.01-1.3.26-2.53.75-3.65.54-1.24-.11-1.83-1.36-1.3C4.41 3.86 1.7 7.85 2.03 12.42Z" />
+    </g>
+  ),
 };
 
 const LABELS: Record<Section, string> = {
@@ -176,13 +180,14 @@ function DockItem({
     if (!box || !Number.isFinite(x)) return 999;
     return x - box.x - box.width / 2;
   });
-  const scale = useSpring(useTransform(distance, [-70, 0, 70], [1, 1.22, 1]), {
+  const peak = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches ? 1.1 : 1.22;
+  const scale = useSpring(useTransform(distance, [-70, 0, 70], [1, peak, 1]), {
     stiffness: 420,
     damping: 28,
     mass: 0.2,
   });
 
-  const tone = lit ? "text-ink" : ctx.hovered === id ? "text-ink" : "text-ink-soft dark:text-ink/85";
+  const tone = lit ? "text-accent dark:text-ink" : ctx.hovered === id ? "text-ink" : "text-ink/75 md:text-ink-soft dark:text-ink/85";
 
   const inner = (
     <>
@@ -190,7 +195,7 @@ function DockItem({
         viewBox="0 0 24 24"
         aria-hidden
         style={{ scale }}
-        className={`relative z-10 size-5 md:size-4 transition-colors duration-200 ${tone} ${text ? "md:hidden" : ""}`}
+        className={`relative z-10 size-4.5 md:size-4 transition-colors duration-200 ${tone} ${text ? "md:hidden" : ""}`}
       >
         {children}
       </motion.svg>
@@ -209,7 +214,7 @@ function DockItem({
     <motion.div
       ref={ref}
       data-dock={id}
-      className={`relative h-10 shrink-0 md:h-8 ${text ? "w-10 md:w-auto md:px-3" : "w-10 md:w-8"} ${className}`}
+      className={`relative h-full shrink-0 md:h-8 ${text ? "w-10.75 md:w-auto md:px-3" : "w-10.75 md:w-8"} ${className}`}
       onPointerEnter={(e) => e.pointerType === "mouse" && ctx.setHovered(id)}
     >
       {text && (
@@ -221,7 +226,7 @@ function DockItem({
         <motion.span
           layoutId="dock-lit"
           transition={spring}
-          className="absolute inset-0 rounded-full bg-ink/6 ring-1 ring-ink/6 ring-inset dark:bg-ink/10 dark:ring-ink/15"
+          className="absolute inset-0 rounded-full bg-accent/10 ring-1 ring-accent/20 ring-inset dark:bg-ink/12 dark:ring-ink/15 md:dark:bg-ink/10"
         />
       )}
       {!lit && ctx.hovered === id && (
@@ -325,7 +330,7 @@ export function Dock() {
       initial={{ y: 12, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 26 }}
-      className="glass-dock fixed top-5 left-6 z-50 hidden h-11 items-center rounded-full px-4 font-display text-base font-semibold tracking-tight text-ink backdrop-blur-sm backdrop-saturate-150 transition-colors hover:text-accent md:flex"
+      className="glass-dock fixed top-5 left-6 z-50 hidden h-11 items-center rounded-full px-4 font-display text-base font-semibold tracking-tight text-ink backdrop-blur-[20px] backdrop-saturate-[1.8] transition-colors hover:text-accent md:flex"
     >
       Y.S.
     </motion.a>
@@ -360,7 +365,7 @@ export function Dock() {
         if (e.target === e.currentTarget) e.preventDefault();
       }}
       style={{ touchAction: "none" }}
-      className="glass-dock flex h-14 items-center backdrop-blur-sm backdrop-saturate-150 gap-1 rounded-full px-2 md:h-11 md:gap-0.5 md:px-1.5 select-none sm:gap-1.5"
+      className="glass-dock flex h-13 items-center gap-0 rounded-full p-1 backdrop-blur-[20px] backdrop-saturate-[1.8] select-none md:h-11 md:gap-0.5 md:px-1.5 md:py-0"
     >
       <LayoutGroup>
         {SECTIONS.map((id) => (

@@ -16,7 +16,7 @@ export function Contact() {
   return (
     <section id="contact" className="relative overflow-hidden px-6 pt-16 pb-28 md:pt-24 md:pb-10">
       <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
-        <motion.h2 {...reveal()} className="font-display text-[clamp(1.6rem,7vw,4rem)] leading-[1.08] font-bold tracking-[-0.03em] text-ink">
+        <motion.h2 {...reveal()} className="font-display text-[clamp(2rem,8.5vw,4rem)] leading-[1.08] font-bold tracking-[-0.03em] text-ink">
           Hiring a
           <RoleSweep />
         </motion.h2>
