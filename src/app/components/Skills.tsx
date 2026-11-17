@@ -38,15 +38,15 @@ function Row({ skills }: { skills: string[] }) {
               y: hovered === i ? -2 : 0,
             }}
             transition={coupling}
-            className={`inline-flex h-11 items-center gap-2.5 rounded-xl border px-3.5 transition-[border-color,background-color] duration-300 will-change-transform ${hovered === i ? "border-ink/20 bg-ink/8 dark:bg-black/35" : "border-ink/10 bg-ink/5 dark:bg-black/20"
+            className={`inline-flex h-9 items-center gap-2 rounded-full border px-3.5 md:h-11 md:gap-2.5 md:rounded-xl md:px-3.5 md:px-3.5 transition-[border-color,background-color,box-shadow] duration-300 will-change-transform ${hovered === i ? "border-ink/20 bg-ink/4 shadow-[0_2px_8px_-2px_rgb(13_18_32/0.12)] dark:bg-ink/5 dark:shadow-none" : "border-ink/10 bg-ink/2 shadow-[0_1px_2px_rgb(13_18_32/0.05)] dark:bg-ink/3 dark:shadow-none"
               }`}
           >
             {hasLogo(skill) ? (
-              <TechLogo name={skill} brand className="size-4.5 shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110" />
+              <TechLogo name={skill} brand className="size-4 shrink-0 transition-transform md:size-4.5 duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110" />
             ) : (
               <span className="font-mono text-[11px] font-bold text-ink-soft">{skill.slice(0, 2)}</span>
             )}
-            <span className="text-[15px] font-medium whitespace-nowrap text-ink">{skill}</span>
+            <span className="text-sm font-medium whitespace-nowrap text-ink md:text-[15px]">{skill}</span>
           </motion.span>
         </motion.li>
       ))}
