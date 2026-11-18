@@ -165,7 +165,7 @@ function DockItem({
   ctx: DockCtx;
   label: string;
   href?: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
   current?: boolean;
   external?: boolean;
   text?: boolean;
@@ -265,8 +265,8 @@ function DockItem({
   );
 }
 
-function Divider() {
-  return <span aria-hidden className="mx-1 h-6 w-px shrink-0 self-center bg-ink/10" />;
+function Divider({ className = "" }: { className?: string }) {
+  return <span aria-hidden className={`mx-1 h-6 w-px shrink-0 self-center bg-ink/10 ${className}`} />;
 }
 
 export function Dock() {
@@ -312,10 +312,12 @@ export function Dock() {
     }
   };
 
+  const scrubSection = scrub && (SECTIONS as readonly string[]).includes(scrub) ? scrub : null;
+
   const ctx: DockCtx = {
     mouseX,
-    lit: scrub ?? active,
-    hovered: scrub ? null : hovered,
+    lit: scrubSection ?? active,
+    hovered: scrub ? (scrubSection ? null : scrub) : hovered,
     tip: scrub ?? hovered,
     scrubbing: scrub !== null,
     setHovered,
@@ -334,7 +336,7 @@ export function Dock() {
     >
       Y.S.
     </motion.a>
-    <div className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-50 -translate-x-1/2 md:top-5 md:right-6 md:bottom-auto md:left-auto md:translate-x-0">
+    <div className="fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.5rem))] left-1/2 z-50 -translate-x-1/2 md:top-5 md:right-6 md:bottom-auto md:left-auto md:translate-x-0">
     <motion.nav
       ref={navRef}
       aria-label="Primary"
@@ -373,9 +375,9 @@ export function Dock() {
             {icons[id]}
           </DockItem>
         ))}
-        <Divider />
+        <Divider className="max-sm:hidden" />
         {github && (
-          <DockItem id="github" ctx={ctx} label="GitHub" href={github.href} external>
+          <DockItem id="github" ctx={ctx} label="GitHub" href={github.href} external className="max-sm:hidden">
             {icons.github}
           </DockItem>
         )}
