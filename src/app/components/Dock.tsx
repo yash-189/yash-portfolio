@@ -312,10 +312,12 @@ export function Dock() {
     }
   };
 
+  const scrubSection = scrub && (SECTIONS as readonly string[]).includes(scrub) ? scrub : null;
+
   const ctx: DockCtx = {
     mouseX,
-    lit: (scrub && (SECTIONS as readonly string[]).includes(scrub) ? scrub : null) ?? active,
-    hovered: scrub ? ((SECTIONS as readonly string[]).includes(scrub) ? null : scrub) : hovered,
+    lit: scrubSection ?? active,
+    hovered: scrub ? (scrubSection ? null : scrub) : hovered,
     tip: scrub ?? hovered,
     scrubbing: scrub !== null,
     setHovered,
