@@ -484,3 +484,9 @@ html.site-scope {
   opacity: 0.25;
   filter: saturate(0.4);
 }
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
