@@ -79,6 +79,12 @@ function GitHubLink({ className = "" }: { className?: string }) {
   );
 }
 
+const trackLight = (e: React.PointerEvent<HTMLElement>) => {
+  const box = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty("--x", `${e.clientX - box.left}px`);
+  e.currentTarget.style.setProperty("--y", `${e.clientY - box.top}px`);
+};
+
 function LeadTile({ project, onOpen }: { project: Project; onOpen: () => void }) {
   return (
     <motion.article
@@ -86,8 +92,10 @@ function LeadTile({ project, onOpen }: { project: Project; onOpen: () => void })
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.6, ease }}
-      className="group/tile grid overflow-hidden rounded-3xl p-2.5 ring-1 ring-ink/10 transition-[box-shadow,translate] duration-300 hover:-translate-y-1 hover:ring-accent/60 hover:shadow-[0_24px_48px_-28px_rgb(13_18_32/0.35)] md:col-span-2 md:grid-cols-12 md:p-3"
+      onPointerMove={trackLight}
+      className="group/tile grid overflow-hidden rounded-3xl p-2.5 relative ring-1 ring-ink/10 transition-[box-shadow,translate,--tw-ring-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:ring-ink/18 hover:shadow-[0_30px_60px_-36px_rgb(13_18_32/0.4)] md:col-span-2 md:grid-cols-12 md:p-3"
     >
+      <span aria-hidden className="tile-light" />
       <button
         type="button"
         onClick={onOpen}
@@ -109,7 +117,7 @@ function LeadTile({ project, onOpen }: { project: Project; onOpen: () => void })
         <div>
           <p className="hidden text-[13px] font-medium text-ink-soft">{project.kind}</p>
           <h4 className="font-display text-2xl leading-tight font-bold tracking-tight text-ink md:text-[2rem]">
-            <button type="button" onClick={onOpen} className="cursor-pointer text-left transition-colors hover:text-accent">
+            <button type="button" onClick={onOpen} className="tile-title cursor-pointer text-left">
               {project.name}
             </button>
           </h4>
@@ -138,8 +146,10 @@ function SideTile({ project, lead, onOpen, index }: { project: Project; lead: bo
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.6, delay: lead ? 0 : (index % 2) * 0.08, ease }}
-      className={`group/tile flex flex-col rounded-3xl p-2.5 ring-1 ring-ink/10 transition-[box-shadow,translate] duration-300 hover:-translate-y-1 hover:ring-accent/60 hover:shadow-[0_24px_48px_-28px_rgb(13_18_32/0.35)] md:p-3 ${lead ? "md:col-span-2" : ""}`}
+      onPointerMove={trackLight}
+      className={`group/tile flex flex-col rounded-3xl p-2.5 relative ring-1 ring-ink/10 transition-[box-shadow,translate,--tw-ring-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:ring-ink/18 hover:shadow-[0_30px_60px_-36px_rgb(13_18_32/0.4)] md:p-3 ${lead ? "md:col-span-2" : ""}`}
     >
+      <span aria-hidden className="tile-light" />
       <button
         type="button"
         onClick={onOpen}
@@ -161,7 +171,7 @@ function SideTile({ project, lead, onOpen, index }: { project: Project; lead: bo
       <div className="flex flex-1 flex-col px-3 pt-5 pb-3 md:px-4 md:pb-4">
         <p className="hidden text-[13px] font-medium text-ink-soft">{project.kind}</p>
         <h4 className="font-display text-2xl leading-tight font-bold tracking-tight text-ink md:text-[1.75rem]">
-          <button type="button" onClick={onOpen} className="cursor-pointer text-left transition-colors hover:text-accent">
+          <button type="button" onClick={onOpen} className="tile-title cursor-pointer text-left">
             {project.name}
           </button>
         </h4>
@@ -429,7 +439,7 @@ function ProjectDialog({
         >
           <span>
             <span className="block text-sm text-ink-soft">Next project</span>
-            <span className="mt-1 block font-display text-2xl font-bold tracking-tight text-ink transition-colors group-hover:text-accent md:text-3xl">
+            <span className="mt-1 block font-display text-2xl font-bold tracking-tight text-ink transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1 md:text-3xl">
               {next.name}
             </span>
           </span>
@@ -479,7 +489,7 @@ export function Projects() {
           transition={{ duration: 0.5, ease }}
         >
           <SectionHeading label="Work" lead="Selected" accent="work" />
-          <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-pretty text-ink-soft md:text-lg">
+          <p className="mt-6 max-w-[40ch] text-lg leading-relaxed text-pretty text-ink-soft md:text-lg">
             Products I&rsquo;ve built at work. The code and screens are private, so here&rsquo;s what I worked on and how.
           </p>
         </motion.div>
@@ -496,7 +506,7 @@ export function Projects() {
       >
         <div>
           <SectionHeading label="Built after hours" lead="Side" accent="projects" ghost="Side" as="h3" small />
-          <p className="mt-5 max-w-[46ch] text-lg leading-relaxed text-pretty text-ink-soft md:text-lg">
+          <p className="mt-5 max-w-[40ch] text-lg leading-relaxed text-pretty text-ink-soft md:text-lg">
             Things I build on my own to try ideas end to end. Each one has a short case study.
           </p>
         </div>

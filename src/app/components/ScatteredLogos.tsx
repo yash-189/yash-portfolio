@@ -71,7 +71,7 @@ function Logo({ logo }: { logo: (typeof SCATTER)[number] }) {
 
 export function ScatteredLogos() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden md:block">
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden mix-blend-difference md:block">
       {SCATTER.map((logo, i) => (
         <Logo key={i} logo={logo} />
       ))}

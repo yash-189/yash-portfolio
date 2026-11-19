@@ -16,12 +16,16 @@ export function HomePage() {
         <ScatteredLogos />
         <HeroB />
         <About />
-        <section id="details" className="mx-auto w-[calc(100%-3rem)] max-w-276 border-t border-ink/10 py-16 md:py-24">
-          <DetailsDemo />
+        <section id="details" className="process-band relative py-16 md:mx-4 md:my-12 md:rounded-[2.5rem] md:py-24">
+          <div className="mx-auto w-[calc(100%-3rem)] max-w-276">
+            <DetailsDemo />
+          </div>
         </section>
         <Projects />
-        <Skills />
-        <Contact />
+        <div className="ink-band relative mt-8 rounded-t-[2rem] md:mx-4 md:mt-12 md:rounded-t-[2.5rem]">
+          <Skills />
+          <Contact />
+        </div>
       </main>
     </>
   );
