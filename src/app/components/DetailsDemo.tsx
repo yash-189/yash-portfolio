@@ -121,7 +121,19 @@ export function DetailsDemo() {
   const [fixedSet, setFixedSet] = useState<Set<IssueId>>(new Set());
   const isFixed = (id: IssueId) => fixedSet.has(id);
   const allFixed = fixedSet.size === Object.keys(ISSUES).length;
+  const [sweep, setSweep] = useState<{ key: number; dir: 1 | -1 } | null>(null);
+  const [flash, setFlash] = useState<{ key: number; text: string } | null>(null);
   const setAll = (on: boolean) => setFixedSet(on ? new Set(Object.keys(ISSUES) as IssueId[]) : new Set());
+  const switchAll = (on: boolean) => {
+    if (on === allFixed) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return setAll(on);
+    setSweep({ key: Date.now(), dir: on ? 1 : -1 });
+    window.setTimeout(() => setAll(on), 180);
+    const key = Date.now();
+    window.setTimeout(() => setFlash({ key, text: on ? "+6 fixes" : "Back to original" }), 520);
+    window.setTimeout(() => setFlash((f) => (f?.key === key ? null : f)), 1900);
+  };
   const toggleFix = (id: IssueId) =>
     setFixedSet((cur) => {
       const next = new Set(cur);
@@ -137,9 +149,9 @@ export function DetailsDemo() {
     setOpen(id);
     const player = button.closest("[data-demo]")?.querySelector<HTMLElement>("[data-player]");
     const box = player?.getBoundingClientRect();
-    const visible = box && box.top >= 0 && box.bottom <= window.innerHeight;
+    const visible = box && box.top >= 0 && box.bottom <= window.innerHeight - (window.innerWidth < 768 ? 96 : 0);
     const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (player && !visible) player.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+    if (player && !visible) player.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: window.innerWidth < 768 ? "start" : "center" });
     setPulse(id);
     const undo = isFixed(id);
     window.setTimeout(() => {
@@ -189,14 +201,14 @@ export function DetailsDemo() {
 
   return (
     <div ref={rootRef} data-demo className="flex flex-col gap-12 md:gap-16">
-      <div>
-        <div>
+      <div className="on-band">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
           <SectionHeading label="Process" lead="How I catch the" accent="details" circled />
-          <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-pretty text-ink-soft md:text-lg">Six things I check on every component before it ships. None of them show up in a linter.</p>
-        </div>
+          <p className="mt-6 max-w-[40ch] text-lg leading-relaxed text-pretty text-ink-soft md:text-lg">Six things I check on every component before it ships. None of them show up in a linter.</p>
+        </motion.div>
       </div>
 
-      <div className="glass-card details-shell relative grid items-start gap-6 rounded-3xl md:grid-cols-2 md:gap-12 md:p-8">
+      <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className="glass-card details-shell relative grid items-start gap-6 rounded-3xl md:grid-cols-2 md:gap-12 md:p-8">
       <div className="absolute top-5 left-1/2 z-20 -translate-x-1/2 md:top-8 md:right-8 md:left-auto md:translate-x-0">
         <div role="radiogroup" aria-label="Version" className="glass-dock relative flex rounded-full p-1">
           {(["Before", "After"] as const).map((label) => {
@@ -207,7 +219,7 @@ export function DetailsDemo() {
                 type="button"
                 role="radio"
                 aria-checked={active}
-                onClick={() => setAll(label === "After")}
+                onClick={() => switchAll(label === "After")}
                 className={`relative z-10 cursor-pointer rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors ${
                   active ? (allFixed ? "text-white" : "text-paper") : "text-ink-soft hover:text-ink"
                 }`}
@@ -225,8 +237,8 @@ export function DetailsDemo() {
           })}
         </div>
       </div>
-      <div className="grid place-items-center px-2 pt-16 pb-6 md:self-stretch md:border-r md:border-ink/10 md:px-5 md:py-10 md:pr-12">
-        <div data-player data-spot={pulse ?? undefined} className="relative w-full max-w-70">
+      <div className="grid place-items-center px-2 pt-22 pb-6 md:self-stretch md:border-r md:border-ink/10 md:px-5 md:py-10 md:pr-12">
+        <div data-player data-spot={pulse ?? undefined} className="relative w-full max-w-70 scroll-mt-4 md:scroll-mt-0">
           <AnimatePresence>
             {note && (
               <motion.span
@@ -243,7 +255,44 @@ export function DetailsDemo() {
               </motion.span>
             )}
           </AnimatePresence>
-          <div className="rounded-3xl bg-paper p-3 shadow-[0_24px_50px_-28px_rgb(13_18_32/0.45)] ring-1 ring-ink/10 md:ring-0">
+          <div className="relative rounded-3xl bg-paper p-3 shadow-[0_24px_50px_-28px_rgb(13_18_32/0.45)] ring-1 ring-ink/10 md:ring-0">
+            <AnimatePresence>
+              {flash && (
+                <motion.span
+                  key={flash.key}
+                  role="status"
+                  initial={{ opacity: 0, y: 10, scale: 0.92, x: "-50%" }}
+                  animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+                  exit={{ opacity: 0, y: -14, x: "-50%" }}
+                  transition={{ type: "spring", stiffness: 320, damping: 24 }}
+                  className={`pointer-events-none absolute top-1/3 left-1/2 z-30 rounded-full px-3 py-1 font-mono text-xs font-medium whitespace-nowrap shadow-[0_8px_20px_-8px_rgb(0_0_0/0.45)] ${flash.text.startsWith("+") ? "bg-accent text-white" : "bg-ink text-paper"}`}
+                >
+                  {flash.text}
+                </motion.span>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {sweep && (
+                <motion.span
+                  key={sweep.key}
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-3xl"
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <motion.span
+                    initial={{ left: sweep.dir === 1 ? "-30%" : "130%" }}
+                    animate={{ left: sweep.dir === 1 ? "130%" : "-30%" }}
+                    transition={{ duration: 0.65, ease: [0.65, 0, 0.35, 1] }}
+                    onAnimationComplete={() => setSweep(null)}
+                    className="absolute inset-y-0 w-0"
+                  >
+                    <span className={`absolute inset-y-0 w-24 from-transparent to-accent/25 ${sweep.dir === 1 ? "right-0 bg-linear-to-r" : "left-0 bg-linear-to-l"}`} />
+                    <span className="absolute inset-y-0 -left-px w-0.5 bg-accent shadow-[0_0_14px_2px_var(--color-accent)]" />
+                  </motion.span>
+                </motion.span>
+              )}
+            </AnimatePresence>
             <div className="relative">
               <motion.div
                 animate={{ borderRadius: isFixed("radius") ? 12 : 24 }}
@@ -500,7 +549,7 @@ export function DetailsDemo() {
                           setStatus(st);
                           const player = e.currentTarget.closest("[data-demo]")?.querySelector<HTMLElement>("[data-player]");
                           const box = player?.getBoundingClientRect();
-                          if (player && box && (box.top < 0 || box.bottom > window.innerHeight)) player.scrollIntoView({ behavior: "smooth", block: "center" });
+                          if (player && box && (box.top < 0 || box.bottom > window.innerHeight)) player.scrollIntoView({ behavior: "smooth", block: window.innerWidth < 768 ? "start" : "center" });
                         }}
                         className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
                           open === "states" && status === st ? "bg-ink text-paper" : "border border-ink/15 text-ink-soft"
@@ -526,7 +575,7 @@ export function DetailsDemo() {
           })}
         </div>
       </>
-      </div>
+      </motion.div>
     </div>
   );
 }
