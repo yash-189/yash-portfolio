@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "motion/react";
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { CopyEmail } from "./CopyEmail";
 import { RoleSweep } from "./RoleSweep";
 
@@ -13,8 +14,14 @@ const reveal = (delay = 0) => ({
 });
 
 export function Contact() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end end"] });
+  const nameY = useTransform(scrollYProgress, [0, 1], [90, 0]);
+  const nameScale = useTransform(scrollYProgress, [0, 1], [0.94, 1]);
+
   return (
-    <section id="contact" className="relative overflow-hidden px-6 pt-16 pb-28 md:pt-24 md:pb-10">
+    <section ref={sectionRef} id="contact" className="relative overflow-hidden px-6 pt-16 pb-28 md:pt-24 md:pb-10">
       <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
         <motion.h2 {...reveal()} className="font-display text-[clamp(2rem,8.5vw,4rem)] leading-[1.08] font-bold tracking-[-0.03em] text-ink">
           Hiring a
@@ -38,10 +45,7 @@ export function Contact() {
 
       <motion.p
         aria-hidden
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.9, ease }}
+        style={reduce ? undefined : { y: nameY, scale: nameScale }}
         className="pointer-events-none mt-20 bg-linear-to-b from-accent/35 to-accent/0 bg-clip-text text-center font-display text-[16.5vw] leading-[0.85] font-bold tracking-tighter whitespace-nowrap text-transparent select-none md:mt-24 md:text-[15vw]"
       >
         YASH SAINI

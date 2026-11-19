@@ -1,3 +1,8 @@
+"use client";
+
+import { useRef } from "react";
+import { useInView } from "motion/react";
+
 export function SectionHeading({
   label,
   lead,
@@ -15,8 +20,11 @@ export function SectionHeading({
   small?: boolean;
   circled?: boolean;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
   return (
-    <div className={`sh relative ${circled ? "sh-circled" : ""}`}>
+    <div ref={ref} data-inview={inView || undefined} className={`sh relative ${circled ? "sh-circled" : ""}`}>
       <span aria-hidden className="sh-ghost">{ghost ?? label}</span>
       <span className="sh-label">{label}</span>
       <div className="sh-row">

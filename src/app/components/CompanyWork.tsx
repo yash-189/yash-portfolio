@@ -24,7 +24,14 @@ export function CompanyWork() {
       {companyProjects.map((item, index) => {
         const isOpen = open.includes(item.id);
         return (
-          <li key={item.id} className={`border-b border-ink/10 transition-colors duration-500`}>
+          <motion.li
+            key={item.id}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.55, delay: index * 0.08, ease }}
+            className="border-b border-ink/10 transition-colors duration-500"
+          >
             <button
               type="button"
               onClick={() => toggle(item.id)}
@@ -35,8 +42,8 @@ export function CompanyWork() {
               <span className="self-start font-mono text-sm leading-7 text-ink-soft/60 tabular-nums md:text-[15px]">{String(index + 1).padStart(2, "0")}</span>
               <span className="min-w-0">
                 <span className="inline-flex rounded-full border border-ink/12 bg-ink/3 px-2.5 py-px text-[13px] leading-6 font-medium text-ink-soft">{item.domain}</span>
-                <span className="mt-3 block font-display text-2xl leading-tight font-semibold tracking-[-0.02em] text-ink transition-colors duration-300 group-hover:text-accent md:text-4xl">
-                  {item.name}
+                <span className="mt-3 block font-display text-2xl leading-tight font-semibold tracking-[-0.02em] text-ink transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1.5 md:text-4xl">
+                  <span className="work-title">{item.name}</span>
                 </span>
               </span>
               <span className="flex items-center gap-4 self-end">
@@ -102,7 +109,7 @@ export function CompanyWork() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </li>
+          </motion.li>
         );
       })}
     </ol>

@@ -3,7 +3,26 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useAnimate, useInView, useReducedMotion } from "motion/react";
 import { contact } from "../content";
+import Image from "next/image";
 import { TechLogo } from "./TechLogo";
+
+const STACK_LOGO: Record<string, string> = {
+  "Next.js": "/logos/nextjs.svg",
+  "Tailwind CSS": "/logos/tailwind.svg",
+};
+
+function ReactMark() {
+  return (
+    <svg aria-hidden viewBox="-11.5 -10.23 23 20.46" className="size-4 text-[#087ea4] dark:text-[#58c4dc]">
+      <circle r="2.05" fill="currentColor" />
+      <g stroke="currentColor" strokeWidth="1" fill="none">
+        <ellipse rx="11" ry="4.2" />
+        <ellipse rx="11" ry="4.2" transform="rotate(60)" />
+        <ellipse rx="11" ry="4.2" transform="rotate(120)" />
+      </g>
+    </svg>
+  );
+}
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const rise = (delay = 0) => ({
@@ -33,7 +52,7 @@ function RoleRoll() {
   }, [inView, reduce]);
 
   return (
-    <span ref={ref} className="relative block [perspective:900px]">
+    <span ref={ref} className="relative block [perspective:900px] max-sm:text-[7.6vw]">
       <span data-focus="role" className="absolute inset-x-[15%] inset-y-0" />
       <span className="sr-only">Frontend engineer</span>
       <span aria-hidden className="relative block h-[1.1em] overflow-hidden">
@@ -217,8 +236,8 @@ export function HeroB() {
 
         <motion.ul {...rise(0.24)} aria-label="Daily stack" className="mt-8 md:mt-14 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 md:gap-2">
           {["React", "Next.js", "React Native", "TypeScript", "Tailwind CSS"].map((t) => (
-            <li key={t} data-focus={t === "React Native" ? "chip" : undefined} className="inline-flex items-center gap-2 rounded-full border border-ink-soft/20 px-3 py-1.5 text-[13px] font-medium text-ink-soft">
-              <TechLogo name={t} brand className="size-3.5" />
+            <li key={t} data-focus={t === "React Native" ? "chip" : undefined} className="inline-flex items-center gap-2 rounded-full border border-ink/12 px-3 py-1.5 text-[13px] font-medium text-ink-soft">
+              {t.startsWith("React") ? <ReactMark /> : t === "TypeScript" ? <TechLogo name={t} brand className="size-4" /> : <Image src={STACK_LOGO[t]} alt="" width={16} height={16} className={`size-4 object-contain ${t === "Next.js" ? "dark:opacity-75 dark:invert" : ""}`} />}
               {t}
             </li>
           ))}
